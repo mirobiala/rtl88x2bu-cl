@@ -1,0 +1,227 @@
+From: Miroslav Dimitrov <mirobiala@gmail.com>
+Date: Mon Sep 18 10:15:35 EEST 2023
+Subject: [PATCH 3/3] Custom configurations.
+
+---
+ core/rtw_ap.c                 | 12 +++++-------
+ os_dep/linux/os_intfs.c       | 10 +++++-----
+ os_dep/linux/ioctl_cfg80211.c | 93 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------
+ 3 files changed, 90 insertions(+), 25 deletions(-)
+
+diff --git a/core/rtw_ap.c b/core/rtw_ap.c
+index ec72564..b2e8cbb 100644
+--- a/core/rtw_ap.c
++++ b/core/rtw_ap.c
+@@ -2437,9 +2437,7 @@ int rtw_check_beacon_data(_adapter *padapter, u8 *pbuf,  int len)
+ 
+ 		/* Parsing VHT OPERATION IE */
+ 
+-		if (vht_cap == _TRUE
+-			&& MLME_IS_MESH(padapter) /* allow only mesh temporarily before VHT IE checking is ready */
+-		) {
++		if (vht_cap == _TRUE) {
+ 			rtw_check_for_vht20(padapter, ie + _BEACON_IE_OFFSET_, pbss_network->IELength - _BEACON_IE_OFFSET_);
+ 			pmlmepriv->ori_vht_en = 1;
+ 			pmlmepriv->vhtpriv.vht_option = _TRUE;
+@@ -4241,10 +4239,10 @@ void stop_ap_mode(_adapter *padapter)
+ 	padapter->netif_up = _FALSE;
+ 	/* _rtw_spinlock_free(&pmlmepriv->bcn_update_lock); */
+ 
+-	/* reset and init security priv , this can refine with rtw_reset_securitypriv */
+-	_rtw_memset((unsigned char *)&padapter->securitypriv, 0, sizeof(struct security_priv));
+-	padapter->securitypriv.ndisauthtype = Ndis802_11AuthModeOpen;
+-	padapter->securitypriv.ndisencryptstatus = Ndis802_11WEPDisabled;
++	// /* reset and init security priv , this can refine with rtw_reset_securitypriv */
++	// _rtw_memset((unsigned char *)&padapter->securitypriv, 0, sizeof(struct security_priv));
++	// padapter->securitypriv.ndisauthtype = Ndis802_11AuthModeOpen;
++	// padapter->securitypriv.ndisencryptstatus = Ndis802_11WEPDisabled;
+ 
+ #ifdef CONFIG_DFS_MASTER
+ 	rtw_dfs_rd_en_decision(padapter, self_action, 0);
+diff --git a/os_dep/linux/os_intfs.c b/os_dep/linux/os_intfs.c
+index 1d50aa5..fa26b29 100644
+--- a/os_dep/linux/os_intfs.c
++++ b/os_dep/linux/os_intfs.c
+@@ -246,20 +246,20 @@ int rtw_bw_mode = CONFIG_RTW_CUSTOMIZE_BWMODE;
+ int rtw_bw_mode = 0x21;
+ #endif
+ int rtw_ampdu_enable = 1;/* for enable tx_ampdu , */ /* 0: disable, 0x1:enable */
+-int rtw_rx_stbc = 1;/* 0: disable, bit(0):enable 2.4g, bit(1):enable 5g, default is set to enable 2.4GHZ for IOT issue with bufflao's AP at 5GHZ */
++int rtw_rx_stbc = 3;/* 0: disable, bit(0):enable 2.4g, bit(1):enable 5g, default is set to enable 2.4GHZ for IOT issue with bufflao's AP at 5GHZ */
+ #if (defined(CONFIG_RTL8814A) || defined(CONFIG_RTL8814B) || defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8822C)) && defined(CONFIG_PCI_HCI)
+ int rtw_rx_ampdu_amsdu = 2;/* 0: disabled, 1:enabled, 2:auto . There is an IOT issu with DLINK DIR-629 when the flag turn on */
+ #elif ((defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8822C)) && defined(CONFIG_SDIO_HCI))
+ int rtw_rx_ampdu_amsdu = 1;
+ #else
+-int rtw_rx_ampdu_amsdu;/* 0: disabled, 1:enabled, 2:auto . There is an IOT issu with DLINK DIR-629 when the flag turn on */
++int rtw_rx_ampdu_amsdu = 1;/* 0: disabled, 1:enabled, 2:auto . There is an IOT issu with DLINK DIR-629 when the flag turn on */
+ #endif
+ /*
+ * 2: Follow the AMSDU filed in ADDBA Resp. (Deault)
+ * 0: Force the AMSDU filed in ADDBA Resp. to be disabled.
+ * 1: Force the AMSDU filed in ADDBA Resp. to be enabled.
+ */
+-int rtw_tx_ampdu_amsdu = 2;
++int rtw_tx_ampdu_amsdu = 1;
+ 
+ int rtw_quick_addba_req = 0;
+ 
+@@ -295,7 +295,7 @@ int rtw_ldpc_cap = 0x33;
+ #ifdef CONFIG_RTL8192F
+ int rtw_stbc_cap = 0x30;
+ #else
+-int rtw_stbc_cap = 0x13;
++int rtw_stbc_cap = 0x33;
+ #endif
+ module_param(rtw_stbc_cap, int, 0644);
+ /*
+@@ -306,7 +306,7 @@ module_param(rtw_stbc_cap, int, 0644);
+ * BIT4: Enable HT Beamformer
+ * BIT5: Enable HT Beamformee
+ */
+-int rtw_beamform_cap = BIT(1) | BIT(3);
++int rtw_beamform_cap = 0x3f;
+ int rtw_bfer_rf_number = 0; /*BeamformerCapRfNum Rf path number, 0 for auto, others for manual*/
+ int rtw_bfee_rf_number = 0; /*BeamformeeCapRfNum  Rf path number, 0 for auto, others for manual*/
+ 
+diff --git a/os_dep/linux/ioctl_cfg80211.c b/os_dep/linux/ioctl_cfg80211.c
+index f7b59a8..3f9474b 100644
+--- a/os_dep/linux/ioctl_cfg80211.c
++++ b/os_dep/linux/ioctl_cfg80211.c
+@@ -33,6 +33,7 @@
+ #define STATION_INFO_PLID			BIT(NL80211_STA_INFO_PLID)
+ #define STATION_INFO_PLINK_STATE	BIT(NL80211_STA_INFO_PLINK_STATE)
+ #define STATION_INFO_SIGNAL			BIT(NL80211_STA_INFO_SIGNAL)
++#define STATION_INFO_RX_BITRATE		BIT(NL80211_STA_INFO_RX_BITRATE)
+ #define STATION_INFO_TX_BITRATE		BIT(NL80211_STA_INFO_TX_BITRATE)
+ #define STATION_INFO_RX_PACKETS		BIT(NL80211_STA_INFO_RX_PACKETS)
+ #define STATION_INFO_TX_PACKETS		BIT(NL80211_STA_INFO_TX_PACKETS)
+@@ -2491,6 +2492,26 @@ static void rtw_cfg80211_fill_mesh_only_sta_info(struct mesh_plink_ent *plink, s
+ }
+ #endif /* CONFIG_RTW_MESH */
+ 
++/* From rtw_wlan_util.c -> rtw_desc_rate_to_bitrate */
++u8 desc_rate_to_mcs (u8 rate_idx)
++{
++	u8 mcs = 0;
++
++	if (rate_idx <= DESC_RATE54M){
++		mcs = rate_idx;
++	} else if ((DESC_RATEMCS0 <= rate_idx) &&
++		   (rate_idx <= DESC_RATEMCS31)) {
++		mcs = rate_idx - DESC_RATEMCS0;
++	} else if ((DESC_RATEVHTSS1MCS0 <= rate_idx) &&
++		   (rate_idx <= DESC_RATEVHTSS4MCS9)) {
++		mcs = (rate_idx - DESC_RATEVHTSS1MCS0) % 10;
++	} else {
++		/* TODO: 60Ghz */
++	}
++
++	return mcs;
++}
++
+ static int cfg80211_rtw_get_station(struct wiphy *wiphy,
+ 	struct net_device *ndev,
+ #if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 16, 0))
+@@ -2570,6 +2591,53 @@ static int cfg80211_rtw_get_station(struct wiphy *wiphy,
+ 		}
+ 		sinfo->filled |= STATION_INFO_INACTIVE_TIME;
+ 		sinfo->inactive_time = rtw_get_passing_time_ms(psta->sta_stats.last_rx_time);
++
++		u8 bw = 0, sgi = 0, rx_rate = 0, tx_rate = 0;
++		switch (psta->cmn.bw_mode) {
++			case CHANNEL_WIDTH_20: bw = RATE_INFO_BW_20; break;
++			case CHANNEL_WIDTH_40: bw = RATE_INFO_BW_40; break;
++			case CHANNEL_WIDTH_80: bw = RATE_INFO_BW_80; break;
++			default:               bw = RATE_INFO_BW_20; break;
++		}
++
++		sinfo->filled |= STATION_INFO_RX_BITRATE;
++		sgi = (psta->curr_rx_rate & 0x80) >> 7;
++		rx_rate = psta->curr_rx_rate & 0x7f;
++		sinfo->rxrate.legacy = rtw_desc_rate_to_bitrate(psta->cmn.bw_mode, rx_rate, sgi);
++		sinfo->rxrate.bw = bw;
++		sinfo->rxrate.nss = rtw_get_sta_rx_nss(padapter, psta);
++		sinfo->rxrate.mcs = desc_rate_to_mcs(rx_rate);
++#ifdef CONFIG_80211N_HT
++	#ifdef CONFIG_80211AC_VHT
++		if (psta->vhtpriv.vht_option) {
++			sinfo->rxrate.flags |= RATE_INFO_FLAGS_VHT_MCS;
++		} else
++	#endif /* CONFIG_80211AC_VHT */
++		if (psta->htpriv.ht_option) {
++			sinfo->rxrate.flags |= RATE_INFO_FLAGS_MCS;
++		}
++#endif /*CONFIG_80211N_HT*/
++		sinfo->rxrate.flags |= ((sgi)? RATE_INFO_FLAGS_SHORT_GI : 0);
++
++		sinfo->filled |= STATION_INFO_TX_BITRATE;
++		sgi = rtw_get_current_tx_sgi(padapter, psta);
++		tx_rate = rtw_get_current_tx_rate(padapter, psta);
++		sinfo->txrate.legacy = rtw_desc_rate_to_bitrate(psta->cmn.bw_mode, tx_rate, sgi);
++		sinfo->txrate.bw = bw;
++		sinfo->txrate.nss = rtw_get_sta_tx_nss(padapter, psta);
++		sinfo->txrate.mcs = desc_rate_to_mcs(tx_rate);
++#ifdef CONFIG_80211N_HT
++	#ifdef CONFIG_80211AC_VHT
++		if (psta->vhtpriv.vht_option) {
++			sinfo->txrate.flags |= RATE_INFO_FLAGS_VHT_MCS;
++		} else
++	#endif /* CONFIG_80211AC_VHT */
++		if (psta->htpriv.ht_option) {
++			sinfo->txrate.flags |= RATE_INFO_FLAGS_MCS;
++		}
++#endif /*CONFIG_80211N_HT*/
++		sinfo->txrate.flags |= ((sgi)? RATE_INFO_FLAGS_SHORT_GI : 0);
++
+ 		sinfo->filled |= STATION_INFO_RX_PACKETS;
+ 		sinfo->rx_packets = sta_rx_data_pkts(psta);
+ 		sinfo->filled |= STATION_INFO_TX_PACKETS;
+@@ -6043,18 +6111,7 @@ static int	cfg80211_rtw_dump_station(struct wiphy *wiphy, struct net_device *nde
+ 	#endif
+ 	
+ 	sinfo->filled = 0;
+-
+-	if (psta) {
+-		sinfo->filled |= STATION_INFO_SIGNAL;
+-		sinfo->signal = translate_percentage_to_dbm(psta->cmn.rssi_stat.rssi);
+-		sinfo->filled |= STATION_INFO_INACTIVE_TIME;
+-		sinfo->inactive_time = rtw_get_passing_time_ms(psta->sta_stats.last_rx_time);
+-	}
+-
+-#ifdef CONFIG_RTW_MESH
+-	if (MLME_IS_MESH(padapter))
+-		rtw_cfg80211_fill_mesh_only_sta_info(plink, psta, sinfo);
+-#endif
++	ret = cfg80211_rtw_get_station(wiphy, ndev, mac, sinfo);
+ 
+ exit:
+ 	return ret;
+@@ -6759,7 +6816,7 @@ static int cfg80211_rtw_del_virtual_intf(struct wiphy *wiphy,
+ 			RTW_INFO(FUNC_NDEV_FMT" remove monitor ndev\n", FUNC_NDEV_ARG(ndev));
+ 		} else {
+ 			RTW_INFO(FUNC_NDEV_FMT" unregister ndev\n", FUNC_NDEV_ARG(ndev));
+-			rtw_os_ndev_unregister(adapter);
++			// rtw_os_ndev_unregister(adapter);
+ 		}
+ 	} else
+ #if defined(CONFIG_P2P) && defined(RTW_DEDICATED_P2P_DEVICE)
+@@ -10160,6 +10217,16 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
+ 
+ #if defined(CONFIG_RTW_80211K) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0))
+ 	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_RRM);
++	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_VHT_IBSS);
++	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_SET_SCAN_DWELL);
++	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_FILS_STA);
++	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_CQM_RSSI_LIST);
++	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_CONTROL_PORT_OVER_NL80211);
++	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_AQL);
++	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_DEL_IBSS_STA);
++	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_SCAN_FREQ_KHZ);
++	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_SCAN_RANDOM_SN);
++	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_SCAN_MIN_PREQ_CONTENT);
+ #endif
+ 
+ #ifdef CONFIG_NET_NS
+-- 
+1.0.0
