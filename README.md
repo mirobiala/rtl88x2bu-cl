@@ -90,7 +90,7 @@ git clone https://github.com/mirobiala/rtl88x2bu-cl package/kernel/rtl88x2bu-cl
 ```
 wget https://downloads.openwrt.org/releases/23.05.0/targets/<target>/config.buildinfo -O .config
 ```
-* If you want the real _vendor_ and _device names_ in the **OpenWRT** instead of _Generic MAC80211_, you need to add them in the `devices.txt` file, `USB devices` section:
+* If you want actual _vendor_ and _device_ names in the **OpenWRT** instead of _Generic MAC80211_, you need to add them in the `devices.txt` file, `USB devices` section:
 ```
 # rtl88x2bu-cl/os_dep/linux/usb_intf.c
 0x0000 0x0000 0x0b05 0x1841    0      0  "ASUS" "AC1300 USB-AC55 B1"
