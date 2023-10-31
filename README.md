@@ -1,5 +1,5 @@
 # rtl88x2bu package for **OpenWRT**
-This package uses [Realtek 88x2BU driver by RinCat](https://github.com/RinCat/RTL88x2BU-Linux-Driver) with patches for **OpenWRT**.
+This package uses [Realtek 88x2BU driver](https://github.com/RinCat/RTL88x2BU-Linux-Driver) by [@RinCat](https://github.com/RinCat) with patches for [OpenWRT](https://openwrt.org/).
 I tested it with [TP-Link Archer T3U Nano](https://www.tp-link.com/us/home-networking/usb-adapter/archer-t3u-nano/) and [OpenWRT v23.05.0](https://openwrt.org/releases/23.05/notes-23.05.0).
 
 **Note:** No need for patching `mac80211.sh` with this package.
@@ -64,8 +64,8 @@ I tested it with [TP-Link Archer T3U Nano](https://www.tp-link.com/us/home-netwo
 </details>
 
 ## Usage
-* Ensure you have C compiler & toolchains, e.g. `build-essential` for **OpenWRT**, check [this](https://openwrt.org/docs/guide-developer/toolchain/install-buildsystem).
-* Download and update the **OpenWRT** sources:
+* Ensure you have C compiler & toolchains, e.g. `build-essential` for [OpenWRT](https://openwrt.org/), check [this](https://openwrt.org/docs/guide-developer/toolchain/install-buildsystem).
+* Download and update the [OpenWRT sources](https://git.openwrt.org/openwrt/openwrt.git):
 ```
 git clone https://git.openwrt.org/openwrt/openwrt.git
 cd openwrt
@@ -82,7 +82,7 @@ git checkout v23.05.0
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 ```
-* Download the **rtl88x2bu** package:
+* Download the [rtl88x2bu](https://github.com/mirobiala/rtl88x2bu-cl) package:
 ```
 git clone https://github.com/mirobiala/rtl88x2bu-cl package/kernel/rtl88x2bu-cl
 ```
@@ -90,7 +90,7 @@ git clone https://github.com/mirobiala/rtl88x2bu-cl package/kernel/rtl88x2bu-cl
 ```
 wget https://downloads.openwrt.org/releases/23.05.0/targets/<target>/config.buildinfo -O .config
 ```
-* If you want actual _vendor_ and _device_ names in the **OpenWRT** instead of _Generic MAC80211_, you need to add them in the `devices.txt` file, `USB devices` section:
+* If you want actual _vendor_ and _device_ names for [OpenWRT](https://openwrt.org/) instead of _Generic MAC80211_, you need to add them in the `devices.txt` file, `USB devices` section:
 ```
 # rtl88x2bu-cl/os_dep/linux/usb_intf.c
 0x0000 0x0000 0x0b05 0x1841    0      0  "ASUS" "AC1300 USB-AC55 B1"
@@ -110,7 +110,7 @@ wget https://downloads.openwrt.org/releases/23.05.0/targets/<target>/config.buil
 0x0000 0x0000 0x2357 0x0115    0      0  "TP-Link" "Archer T4U V3"
 0x0000 0x0000 0x20F4 0x808A    0      0  "TRENDnet" "TEW-808UBM"
 ```
-* Compile and build the **OpenWRT** image.
+* Compile and build the [OpenWRT](https://openwrt.org/) image.
 ```
 make menuconfig
 <enable rtl88x2bu-cl>
@@ -127,9 +127,9 @@ make
 
 
 ## Credits
-* [RinCat](https://github.com/RinCat)
-* [morrownr](https://github.com/morrownr)
-* [cilynx](https://github.com/cilynx)
-* [ValdikSS](https://forum.openwrt.org/u/ValdikSS)
-* [plntyk](https://github.com/plntyk)
-* [_jason](https://gitlab.com/_jason)
+* [@RinCat](https://github.com/RinCat)
+* [@morrownr](https://github.com/morrownr)
+* [@cilynx](https://github.com/cilynx)
+* [@ValdikSS](https://forum.openwrt.org/u/ValdikSS)
+* [@plntyk](https://github.com/plntyk)
+* [@_jason](https://gitlab.com/_jason)
