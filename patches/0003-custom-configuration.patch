@@ -6,7 +6,8 @@ Subject: [PATCH 3/3] Custom configurations.
  core/rtw_ap.c                 | 12 +++++-------
  os_dep/linux/os_intfs.c       | 10 +++++-----
  os_dep/linux/ioctl_cfg80211.c | 93 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------
- 3 files changed, 90 insertions(+), 25 deletions(-)
+ os_dep/linux/rtw_proc.c       |  2 ++
+ 4 files changed, 92 insertions(+), 25 deletions(-)
 
 diff --git a/core/rtw_ap.c b/core/rtw_ap.c
 index ec72564..b2e8cbb 100644
@@ -223,5 +224,18 @@ index f7b59a8..3f9474b 100644
  #endif
  
  #ifdef CONFIG_NET_NS
+diff --git a/os_dep/linux/rtw_proc.c b/os_dep/linux/rtw_proc.c
+index c78af83..cc3346e 100644
+--- a/os_dep/linux/rtw_proc.c
++++ b/os_dep/linux/rtw_proc.c
+@@ -6285,6 +6285,8 @@ void rtw_adapter_proc_replace(struct net_device *dev)
+ 
+ 	adapter->dir_dev = NULL;
+ 
++	strncpy(adapter->old_ifname, dev->name, IFNAMSIZ);
++	adapter->old_ifname[IFNAMSIZ - 1] = '\0';
+ 	rtw_adapter_proc_init(dev);
+ 
+ }
 -- 
 1.0.0
