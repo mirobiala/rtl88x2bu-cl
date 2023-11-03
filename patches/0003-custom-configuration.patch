@@ -3,11 +3,11 @@ Date: Mon Sep 18 10:15:35 EEST 2023
 Subject: [PATCH 3/3] Custom configurations.
 
 ---
- core/rtw_ap.c                 | 12 +++++-------
- os_dep/linux/os_intfs.c       | 10 +++++-----
- os_dep/linux/ioctl_cfg80211.c | 93 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------
- os_dep/linux/rtw_proc.c       |  2 ++
- 4 files changed, 92 insertions(+), 25 deletions(-)
+ core/rtw_ap.c                 |  12 +++++-------
+ os_dep/linux/os_intfs.c       |  10 +++++-----
+ os_dep/linux/ioctl_cfg80211.c | 102 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------------
+ os_dep/linux/rtw_proc.c       |   2 ++
+ 4 files changed, 95 insertions(+), 31 deletions(-)
 
 diff --git a/core/rtw_ap.c b/core/rtw_ap.c
 index ec72564..b2e8cbb 100644
@@ -207,7 +207,30 @@ index f7b59a8..3f9474b 100644
  		}
  	} else
  #if defined(CONFIG_P2P) && defined(RTW_DEDICATED_P2P_DEVICE)
-@@ -10160,6 +10217,16 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
+@@ -9964,6 +10021,9 @@ struct ieee80211_iface_limit rtw_limits[] = {
+ 	{
+ 		.max = rtw_min(CONFIG_IFACE_NUMBER, CONFIG_LIMITED_AP_NUM),
+ 		.types = BIT(NL80211_IFTYPE_AP)
++			#if defined(CONFIG_RTW_MESH)
++			| BIT(NL80211_IFTYPE_MESH_POINT)
++			#endif
+ 			#if defined(CONFIG_P2P) && ((LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE))
+ 			| BIT(NL80211_IFTYPE_P2P_GO)
+ 			#endif
+@@ -9975,12 +10035,6 @@ struct ieee80211_iface_limit rtw_limits[] = {
+ 		.types = BIT(NL80211_IFTYPE_P2P_DEVICE)
+ 	},
+ 	#endif
+-	#if defined(CONFIG_RTW_MESH)
+-	{
+-		.max = 1,
+-		.types = BIT(NL80211_IFTYPE_MESH_POINT)
+-	},
+-	#endif
+ };
+
+ struct ieee80211_iface_combination rtw_combinations[] = {
+@@ -10160,6 +10214,16 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
  
  #if defined(CONFIG_RTW_80211K) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0))
  	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_RRM);
