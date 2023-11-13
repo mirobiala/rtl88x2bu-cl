@@ -74,8 +74,7 @@ git pull
 * Select a specific code revision:
 ```
 git branch -a
-git tag
-git checkout v23.05.0
+git checkout master
 ```
 * Update the feeds:
 ```
