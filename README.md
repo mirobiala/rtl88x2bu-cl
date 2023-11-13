@@ -90,8 +90,7 @@ git clone https://github.com/mirobiala/rtl88x2bu-cl package/kernel/rtl88x2bu-cl
 ```
 cd package/kernel/rtl88x2bu-cl
 git branch -a
-git tag
-git checkout v1.0.0
+git checkout snapshot
 cd ../../../
 ```
 * Download the default config for the **desired** target:
