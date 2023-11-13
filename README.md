@@ -86,6 +86,14 @@ git checkout v23.05.0
 ```
 git clone https://github.com/mirobiala/rtl88x2bu-cl package/kernel/rtl88x2bu-cl
 ```
+* Select a patch code revision:
+```
+cd package/kernel/rtl88x2bu-cl
+git branch -a
+git tag
+git checkout v1.0.0
+cd ../../../
+```
 * Download the default config for the **desired** target:
 ```
 wget https://downloads.openwrt.org/releases/23.05.0/targets/<target>/config.buildinfo -O .config
