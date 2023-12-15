@@ -155,7 +155,7 @@ index f7b59a8..ac1e0b2 100644
  	int link_id,
  #endif
  	u8 key_index)
-@@ -5404,7 +5404,7 @@ static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *nd
+@@ -5413,7 +5413,7 @@ static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *nd
  	return ret;
  }
  
@@ -164,7 +164,7 @@ index f7b59a8..ac1e0b2 100644
  static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev, unsigned int link_id)
  #else
  static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev)
-@@ -6785,7 +6785,7 @@ exit:
+@@ -6794,7 +6794,7 @@ exit:
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
  static int cfg80211_rtw_get_channel(struct wiphy *wiphy,
  	struct wireless_dev *wdev,
@@ -173,7 +173,7 @@ index f7b59a8..ac1e0b2 100644
  	unsigned int link_id,
  #endif
  	struct cfg80211_chan_def *chandef)
-@@ -10726,7 +10726,7 @@ void rtw_wdev_unregister(struct wireless_dev *wdev)
+@@ -10735,7 +10735,7 @@ void rtw_wdev_unregister(struct wireless_dev *wdev)
  	rtw_cfg80211_indicate_scan_done(adapter, _TRUE);
  
  	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)) || defined(COMPAT_KERNEL_RELEASE)

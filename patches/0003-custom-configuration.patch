@@ -178,7 +178,7 @@ index f7b59a8..3f9474b 100644
  		sinfo->filled |= STATION_INFO_RX_PACKETS;
  		sinfo->rx_packets = sta_rx_data_pkts(psta);
  		sinfo->filled |= STATION_INFO_TX_PACKETS;
-@@ -6043,18 +6111,7 @@ static int	cfg80211_rtw_dump_station(struct wiphy *wiphy, struct net_device *nde
+@@ -6052,18 +6120,7 @@ static int	cfg80211_rtw_dump_station(struct wiphy *wiphy, struct net_device *nde
  	#endif
  	
  	sinfo->filled = 0;
@@ -198,7 +198,7 @@ index f7b59a8..3f9474b 100644
  
  exit:
  	return ret;
-@@ -6759,7 +6816,7 @@ static int cfg80211_rtw_del_virtual_intf(struct wiphy *wiphy,
+@@ -6768,7 +6825,7 @@ static int cfg80211_rtw_del_virtual_intf(struct wiphy *wiphy,
  			RTW_INFO(FUNC_NDEV_FMT" remove monitor ndev\n", FUNC_NDEV_ARG(ndev));
  		} else {
  			RTW_INFO(FUNC_NDEV_FMT" unregister ndev\n", FUNC_NDEV_ARG(ndev));
@@ -207,7 +207,7 @@ index f7b59a8..3f9474b 100644
  		}
  	} else
  #if defined(CONFIG_P2P) && defined(RTW_DEDICATED_P2P_DEVICE)
-@@ -9964,6 +10021,9 @@ struct ieee80211_iface_limit rtw_limits[] = {
+@@ -9973,6 +10030,9 @@ struct ieee80211_iface_limit rtw_limits[] = {
  	{
  		.max = rtw_min(CONFIG_IFACE_NUMBER, CONFIG_LIMITED_AP_NUM),
  		.types = BIT(NL80211_IFTYPE_AP)
@@ -217,7 +217,7 @@ index f7b59a8..3f9474b 100644
  			#if defined(CONFIG_P2P) && ((LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE))
  			| BIT(NL80211_IFTYPE_P2P_GO)
  			#endif
-@@ -9975,12 +10035,6 @@ struct ieee80211_iface_limit rtw_limits[] = {
+@@ -9984,12 +10044,6 @@ struct ieee80211_iface_limit rtw_limits[] = {
  		.types = BIT(NL80211_IFTYPE_P2P_DEVICE)
  	},
  	#endif
@@ -230,7 +230,7 @@ index f7b59a8..3f9474b 100644
  };
 
  struct ieee80211_iface_combination rtw_combinations[] = {
-@@ -10160,6 +10214,16 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
+@@ -10169,6 +10223,16 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
  
  #if defined(CONFIG_RTW_80211K) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0))
  	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_RRM);
