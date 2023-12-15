@@ -1,13 +1,14 @@
 From: Miroslav Dimitrov <mirobiala@gmail.com>
-Date: Mon Sep 18 10:15:35 EEST 2023
+Date: Mon Dec 14 17:22:26 EEST 2023
 Subject: [PATCH 1/3] OpenWrt build patch
 
 ---
  Makefile                      | 32 ++++++++++++++++++++++++++++++--
  include/byteorder/swab.h      |  2 +-
  os_dep/linux/ioctl_cfg80211.c | 25 ++++++++++++++-----------
- os_dep/linux/os_intfs.c       | 2  ++
- 4 files changed, 47 insertions(+), 14 deletions(-)
+ os_dep/linux/os_intfs.c       |  2 ++
+ core/mesh/rtw_mesh.c          | 64 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 111 insertions(+), 14 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index e98e3ca..128de80 100644
@@ -205,5 +206,80 @@ index 1d50aa5..3135dd4 100644
  #else
  	netif_napi_add(ndev, &adapter->napi, rtw_recv_napi_poll, RTL_NAPI_WEIGHT);
  #endif
+diff --git a/core/mesh/rtw_mesh.c b/core/mesh/rtw_mesh.c
+index fad46e8..adc9556 100644
+--- a/core/mesh/rtw_mesh.c
++++ b/core/mesh/rtw_mesh.c
+@@ -3020,6 +3020,70 @@ static void rtw_mpath_tx_queue_flush(_adapter *adapter)
+ 	}
+ }
+
++// introduce kernel interval slab structure and slab_address() function, solved
++// 'undefined' error for >=5.16. TODO: we should fix this workaround if BCC
++// framework support BTF/CO-RE.
++struct slab {
++	unsigned long __page_flags;
++#if defined(CONFIG_SLAB)
++	struct kmem_cache *slab_cache;
++	union {
++		struct {
++			struct list_head slab_list;
++			void *freelist;	/* array of free object indexes */
++			void *s_mem;	/* first object */
++		};
++		struct rcu_head rcu_head;
++	};
++	unsigned int active;
++#elif defined(CONFIG_SLUB)
++	struct kmem_cache *slab_cache;
++	union {
++		struct {
++			union {
++				struct list_head slab_list;
++#ifdef CONFIG_SLUB_CPU_PARTIAL
++				struct {
++					struct slab *next;
++					int slabs;		/* Nr of slabs left */
++				};
++#endif
++			};
++			/* Double-word boundary */
++			void *freelist;			/* first free object */
++			union {
++				unsigned long counters;
++				struct {
++					unsigned inuse:16;
++					unsigned objects:15;
++					unsigned frozen:1;
++				};
++			};
++		};
++		struct rcu_head rcu_head;
++	};
++	unsigned int __unused;
++#elif defined(CONFIG_SLOB)
++	struct list_head slab_list;
++	void *__unused_1;
++	void *freelist;			/* first free block */
++	long units;
++	unsigned int __unused_2;
++#else
++#error "Unexpected slab allocator configured"
++#endif
++	atomic_t __page_refcount;
++#ifdef CONFIG_MEMCG
++	unsigned long memcg_data;
++#endif
++};
++// slab_address() will not be used, and NULL will be returned directly, which
++// can avoid adaptation of different kernel versions
++static inline void *slab_address(const struct slab *slab)
++{
++	return NULL;
++}
++
+ #ifdef PLATFORM_LINUX /* 3.10 ~ 4.13 checked */
+ #if defined(CONFIG_SLUB)
+ #include <linux/slub_def.h>
 -- 
 1.0.0
