@@ -43,7 +43,7 @@ diff --git a/os_dep/linux/os_intfs.c b/os_dep/linux/os_intfs.c
 index 1d50aa5..fa26b29 100644
 --- a/os_dep/linux/os_intfs.c
 +++ b/os_dep/linux/os_intfs.c
-@@ -246,20 +246,20 @@ int rtw_bw_mode = CONFIG_RTW_CUSTOMIZE_BWMODE;
+@@ -252,20 +252,20 @@ int rtw_bw_mode = CONFIG_RTW_CUSTOMIZE_BWMODE;
  int rtw_bw_mode = 0x21;
  #endif
  int rtw_ampdu_enable = 1;/* for enable tx_ampdu , */ /* 0: disable, 0x1:enable */
@@ -67,7 +67,7 @@ index 1d50aa5..fa26b29 100644
  
  int rtw_quick_addba_req = 0;
  
-@@ -295,7 +295,7 @@ int rtw_ldpc_cap = 0x33;
+@@ -301,7 +301,7 @@ int rtw_ldpc_cap = 0x33;
  #ifdef CONFIG_RTL8192F
  int rtw_stbc_cap = 0x30;
  #else
@@ -76,7 +76,7 @@ index 1d50aa5..fa26b29 100644
  #endif
  module_param(rtw_stbc_cap, int, 0644);
  /*
-@@ -306,7 +306,7 @@ module_param(rtw_stbc_cap, int, 0644);
+@@ -312,7 +312,7 @@ module_param(rtw_stbc_cap, int, 0644);
  * BIT4: Enable HT Beamformer
  * BIT5: Enable HT Beamformee
  */
