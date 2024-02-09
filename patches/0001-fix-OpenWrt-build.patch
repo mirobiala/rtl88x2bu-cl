@@ -186,7 +186,7 @@ diff --git a/os_dep/linux/os_intfs.c b/os_dep/linux/os_intfs.c
 index 1d50aa5..3135dd4 100644
 --- a/os_dep/linux/os_intfs.c
 +++ b/os_dep/linux/os_intfs.c
-@@ -2149,6 +2149,8 @@ int rtw_os_ndev_register(_adapter *adapter, const char *name)
+@@ -2155,6 +2155,8 @@ int rtw_os_ndev_register(_adapter *adapter, const char *name)
  #ifdef CONFIG_RTW_NAPI
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
  	netif_napi_add_weight(ndev, &adapter->napi, rtw_recv_napi_poll, RTL_NAPI_WEIGHT);
