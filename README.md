@@ -91,32 +91,12 @@ git clone https://github.com/mirobiala/rtl88x2bu-cl package/kernel/rtl88x2bu-cl
 cd package/kernel/rtl88x2bu-cl
 git branch -a
 git tag
-git checkout v1.0.1
+git checkout v1.0.2
 cd ../../../
 ```
 * Download the default config for the **desired** target:
 ```
 wget https://downloads.openwrt.org/releases/23.05.2/targets/<target>/config.buildinfo -O .config
-```
-* If you want actual _vendor_ and _device_ names for [OpenWRT](https://openwrt.org/) instead of _Generic MAC80211_, you need to add them in the `devices.txt` file, `USB devices` section:
-```
-# rtl88x2bu-cl/os_dep/linux/usb_intf.c
-0x0000 0x0000 0x0b05 0x1841    0      0  "ASUS" "AC1300 USB-AC55 B1"
-0x0000 0x0000 0x0b05 0x184C    0      0  "ASUS" "U2"
-0x0000 0x0000 0x0B05 0x19AA    0      0  "ASUS" "USB-AC58"
-0x0000 0x0000 0x7392 0xB822    0      0  "Edimax" "EW-7822ULC"
-0x0000 0x0000 0x7392 0xC822    0      0  "Edimax" "EW-7822UTC"
-0x0000 0x0000 0x7392 0xF822    0      0  "Edimax" "EW-7822UAD"
-0x0000 0x0000 0x2001 0x331e    0      0  "Dlink" "DWA-181"
-0x0000 0x0000 0x2001 0x331c    0      0  "Dlink" "DWA-182"
-0x0000 0x0000 0x2001 0x331f    0      0  "Dlink" "DWA-183 D Ver"
-0x0000 0x0000 0x2001 0x3322    0      0  "Dlink" "DWA-T185"
-0x0000 0x0000 0x0846 0x9055    0      0  "NetGear" "A6150"
-0x0000 0x0000 0x2357 0x012D    0      0  "TP-Link" "Archer T3U"
-0x0000 0x0000 0x2357 0x012E    0      0  "TP-Link" "Archer T3U Nano"
-0x0000 0x0000 0x2357 0x0138    0      0  "TP-Link" "Archer T3U Plus"
-0x0000 0x0000 0x2357 0x0115    0      0  "TP-Link" "Archer T4U V3"
-0x0000 0x0000 0x20F4 0x808A    0      0  "TRENDnet" "TEW-808UBM"
 ```
 * Compile and build the [OpenWRT](https://openwrt.org/) image.
 ```

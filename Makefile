@@ -18,13 +18,12 @@ include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
 define KernelPackage/rtl88x2bu-cl
-  SUBMENU:=Wireless Drivers
-  TITLE:=Realtek 88x2BU driver by RinCat
-  DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT
-  FILES:=\
-	$(PKG_BUILD_DIR)/rtl88x2bu.ko
-  AUTOLOAD:=$(call AutoProbe,rtl88x2bu)
-  PROVIDES:=kmod-rtl88x2bu
+	SUBMENU:=Wireless Drivers
+	TITLE:=Realtek 88x2BU driver by RinCat
+	DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT
+	FILES:=$(PKG_BUILD_DIR)/rtl88x2bu.ko
+	AUTOLOAD:=$(call AutoProbe,rtl88x2bu)
+	PROVIDES:=kmod-rtl88x2bu
 endef
 
 NOSTDINC_FLAGS := \
@@ -44,6 +43,22 @@ endif
 
 NOSTDINC_FLAGS+=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DBUILD_OPENWRT
 
+define Build/Prepare
+	$(call Build/Prepare/Default)
+	$(shell PATCHDIR=$$(pwd); \
+		cd $(TOPDIR); \
+		REBUILD_PATCHED=0; \
+		for PATCH in $$PATCHDIR/openwrt_patches/*; do \
+			if ! git apply -q -R --check <$$PATCH; then \
+				git apply -v <$$PATCH; \
+				REBUILD_PATCHED=1; \
+			fi; \
+		done; \
+		if [ $$REBUILD_PATCHED -eq 1 ] ; then \
+			$$(make package/iwinfo/compile); \
+		fi \
+	)
+endef
 
 define Build/Compile
 	+$(KERNEL_MAKE) $(PKG_JOBS) \
