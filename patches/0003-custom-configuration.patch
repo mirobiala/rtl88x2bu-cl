@@ -230,7 +230,7 @@ index f7b59a8..3f9474b 100644
  };
 
  struct ieee80211_iface_combination rtw_combinations[] = {
-@@ -10169,6 +10223,16 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
+@@ -10169,6 +10220,13 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
  
  #if defined(CONFIG_RTW_80211K) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0))
  	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_RRM);
@@ -239,9 +239,6 @@ index f7b59a8..3f9474b 100644
 +	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_FILS_STA);
 +	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_CQM_RSSI_LIST);
 +	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_CONTROL_PORT_OVER_NL80211);
-+	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_AQL);
-+	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_DEL_IBSS_STA);
-+	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_SCAN_FREQ_KHZ);
 +	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_SCAN_RANDOM_SN);
 +	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_SCAN_MIN_PREQ_CONTENT);
  #endif
