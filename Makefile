@@ -49,7 +49,7 @@ define Build/Prepare
 		cd $(TOPDIR); \
 		REBUILD_PATCHED=0; \
 		for PATCH in $$PATCHDIR/openwrt_patches/*; do \
-			if ! git apply -q -R --check <$$PATCH; then \
+			if ! git apply -R --check <$$PATCH >> /dev/null; then \
 				git apply -v <$$PATCH; \
 				REBUILD_PATCHED=1; \
 			fi; \

@@ -1,12 +1,15 @@
 --- /dev/null
 +++ b/package/network/utils/iwinfo/patches/0001-rtl88x2bu-cl.patch
-@@ -0,0 +1,27 @@
+@@ -0,0 +1,62 @@
 +--- a/devices.txt
 ++++ b/devices.txt
-+@@ -235,6 +235,24 @@
-+ # mt7615/usb.c
-+ 0x0000 0x0000 0x0e8d 0x7663    0      0  "MediaTek" "MT7663U"
-+ 0x0000 0x0000 0x043e 0x310c    0      0  "LG" "LGSBWAC02"
++@@ -199,3 +199,24 @@
++ 0x14e4 0xaa52 0x14e4 0xaa52    0      0  "Broadcom" "BCM43602"
++ 0x02d0 0xa9a6 0x0000 0x0000    0      0  "Cypress"  "CYW43455"
++ 0x1ae9 0x0310 0x1ae9 0x0000    0      0  "Wilocity" "Wil6210"
+++
+++# USB devices
+++# 0x0000 | 0x0000 | vendor id | product id | ...
 ++# rtl88x2bu-cl/os_dep/linux/usb_intf.c
 ++0x0000 0x0000 0x13b1 0x0043    0      0  "Alpha" "Alpha"
 ++0x0000 0x0000 0x0b05 0x1841    0      0  "ASUS" "AC1300 USB-AC55 B1"
@@ -25,6 +28,38 @@
 ++0x0000 0x0000 0x2357 0x0138    0      0  "TP-Link" "Archer T3U Plus"
 ++0x0000 0x0000 0x2357 0x0115    0      0  "TP-Link" "Archer T4U V3"
 ++0x0000 0x0000 0x20F4 0x808A    0      0  "TRENDnet" "TEW-808UBM"
-+ 
-+ # FDT compatible strings
-+ # "compatible" | txpower offset | frequency offset | ...
++--- a/iwinfo_nl80211.c
+++++ b/iwinfo_nl80211.c
++@@ -3425,7 +3425,9 @@
++ 		{ "vendor", &id->vendor_id },
++ 		{ "device", &id->device_id },
++ 		{ "subsystem_vendor", &id->subsystem_vendor_id },
++-		{ "subsystem_device", &id->subsystem_device_id }
+++		{ "subsystem_device", &id->subsystem_device_id },
+++		{ "../idVendor", &id->subsystem_vendor_id },
+++		{ "../idProduct", &id->subsystem_device_id }
++ 	};
++
++ 	memset(id, 0, sizeof(*id));
++@@ -3443,14 +3445,13 @@
++ 			*lookup[i].dest = strtoul(num, NULL, 16);
++ 	}
++
++-	/* Failed to obtain hardware IDs, try FDT */
++-	if (id->vendor_id == 0 || id->device_id == 0)
++-		if (!nl80211_hardware_id_from_fdt(id, ifname))
++-			return 0;
++-
++-	/* Failed to obtain hardware IDs, search board config */
++-	if (id->vendor_id == 0 || id->device_id == 0)
++-		return iwinfo_hardware_id_from_mtd(id);
+++	/* Failed to obtain hardware PCI/USB IDs... */
+++	if (id->vendor_id == 0 && id->device_id == 0 &&
+++	    id->subsystem_vendor_id == 0 && id->subsystem_device_id == 0)
+++		/* ... first fallback to FDT ... */
+++		if (nl80211_hardware_id_from_fdt(id, ifname) == -1)
+++			/* ... then board config */
+++			return iwinfo_hardware_id_from_mtd(id);
++
++ 	return 0;
++ }
