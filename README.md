@@ -101,7 +101,7 @@ wget https://downloads.openwrt.org/releases/23.05.2/targets/<target>/config.buil
 * Compile and build the [OpenWRT](https://openwrt.org/) image.
 ```
 make menuconfig
-<enable rtl88x2bu-cl>
+<enable Kernel modules->Wireless Drivers->kmod-rtl88x2bu-cl ... Realtek 88x2BU driver by RinCat>
 make
 ```
 
