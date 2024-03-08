@@ -1,4 +1,4 @@
-# rtl88x2bu package for OpenWRT
+# rtl88x2bu package for OpenWRT (v23.05.2)
 This package uses [Realtek 88x2BU driver](https://github.com/RinCat/RTL88x2BU-Linux-Driver) by [@RinCat](https://github.com/RinCat) with patches for [OpenWRT](https://openwrt.org/).
 I tested it with [TP-Link Archer T3U Nano](https://www.tp-link.com/us/home-networking/usb-adapter/archer-t3u-nano/) and [OpenWRT v23.05.2](https://openwrt.org/releases/23.05/notes-23.05.2).
 
