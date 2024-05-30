@@ -3,11 +3,11 @@ Date: Mon Sep 18 10:15:35 EEST 2023
 Subject: [PATCH 3/3] Custom configurations.
 
 ---
- core/rtw_ap.c                 |  12 +++++-------
- os_dep/linux/os_intfs.c       |  10 +++++-----
- os_dep/linux/ioctl_cfg80211.c | 102 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------------
+ core/rtw_ap.c                 |   4 +---
+ os_dep/linux/os_intfs.c       |  18 +++++++++++++-----
+ os_dep/linux/ioctl_cfg80211.c | 100 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++------------------
  os_dep/linux/rtw_proc.c       |   2 ++
- 4 files changed, 95 insertions(+), 31 deletions(-)
+ 4 files changed, 98 insertions(+), 26 deletions(-)
 
 diff --git a/core/rtw_ap.c b/core/rtw_ap.c
 index ec72564..b2e8cbb 100644
@@ -24,21 +24,6 @@ index ec72564..b2e8cbb 100644
  			rtw_check_for_vht20(padapter, ie + _BEACON_IE_OFFSET_, pbss_network->IELength - _BEACON_IE_OFFSET_);
  			pmlmepriv->ori_vht_en = 1;
  			pmlmepriv->vhtpriv.vht_option = _TRUE;
-@@ -4241,10 +4239,10 @@ void stop_ap_mode(_adapter *padapter)
- 	padapter->netif_up = _FALSE;
- 	/* _rtw_spinlock_free(&pmlmepriv->bcn_update_lock); */
- 
--	/* reset and init security priv , this can refine with rtw_reset_securitypriv */
--	_rtw_memset((unsigned char *)&padapter->securitypriv, 0, sizeof(struct security_priv));
--	padapter->securitypriv.ndisauthtype = Ndis802_11AuthModeOpen;
--	padapter->securitypriv.ndisencryptstatus = Ndis802_11WEPDisabled;
-+	// /* reset and init security priv , this can refine with rtw_reset_securitypriv */
-+	// _rtw_memset((unsigned char *)&padapter->securitypriv, 0, sizeof(struct security_priv));
-+	// padapter->securitypriv.ndisauthtype = Ndis802_11AuthModeOpen;
-+	// padapter->securitypriv.ndisencryptstatus = Ndis802_11WEPDisabled;
- 
- #ifdef CONFIG_DFS_MASTER
- 	rtw_dfs_rd_en_decision(padapter, self_action, 0);
 diff --git a/os_dep/linux/os_intfs.c b/os_dep/linux/os_intfs.c
 index 1d50aa5..fa26b29 100644
 --- a/os_dep/linux/os_intfs.c
@@ -85,6 +70,30 @@ index 1d50aa5..fa26b29 100644
  int rtw_bfer_rf_number = 0; /*BeamformerCapRfNum Rf path number, 0 for auto, others for manual*/
  int rtw_bfee_rf_number = 0; /*BeamformeeCapRfNum  Rf path number, 0 for auto, others for manual*/
  
+@@ -2194,7 +2196,11 @@ int rtw_os_ndev_register(_adapter *adapter, const char *name)
+ 	if (rtnl_lock_needed)
+ 		ret = (register_netdev(ndev) == 0) ? _SUCCESS : _FAIL;
+ 	else
++#if defined(CONFIG_IOCTL_CFG80211)
++		ret = (cfg80211_register_netdevice(ndev) == 0) ? _SUCCESS : _FAIL;
++#else
+ 		ret = (register_netdevice(ndev) == 0) ? _SUCCESS : _FAIL;
++#endif
+
+ 	if (ret == _SUCCESS)
+ 		adapter->registered = 1;
+@@ -2243,7 +2249,11 @@ void rtw_os_ndev_unregister(_adapter *adapter)
+ 		if (rtnl_lock_needed)
+ 			unregister_netdev(netdev);
+ 		else
++#if defined(CONFIG_IOCTL_CFG80211)
++			cfg80211_unregister_netdevice(netdev);
++#else
+ 			unregister_netdevice(netdev);
++#endif
+ 	}
+
+ #if defined(CONFIG_IOCTL_CFG80211) && !defined(RTW_SINGLE_WIPHY)
 diff --git a/os_dep/linux/ioctl_cfg80211.c b/os_dep/linux/ioctl_cfg80211.c
 index f7b59a8..3f9474b 100644
 --- a/os_dep/linux/ioctl_cfg80211.c
@@ -198,15 +207,6 @@ index f7b59a8..3f9474b 100644
  
  exit:
  	return ret;
-@@ -6768,7 +6825,7 @@ static int cfg80211_rtw_del_virtual_intf(struct wiphy *wiphy,
- 			RTW_INFO(FUNC_NDEV_FMT" remove monitor ndev\n", FUNC_NDEV_ARG(ndev));
- 		} else {
- 			RTW_INFO(FUNC_NDEV_FMT" unregister ndev\n", FUNC_NDEV_ARG(ndev));
--			rtw_os_ndev_unregister(adapter);
-+			// rtw_os_ndev_unregister(adapter);
- 		}
- 	} else
- #if defined(CONFIG_P2P) && defined(RTW_DEDICATED_P2P_DEVICE)
 @@ -9973,6 +10030,9 @@ struct ieee80211_iface_limit rtw_limits[] = {
  	{
  		.max = rtw_min(CONFIG_IFACE_NUMBER, CONFIG_LIMITED_AP_NUM),

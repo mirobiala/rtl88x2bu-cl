@@ -7,10 +7,10 @@ PKG_RELEASE=2
 PKG_LICENSE:=GPLv2
 
 PKG_SOURCE_URL:=https://github.com/RinCat/RTL88x2BU-Linux-Driver
-PKG_MIRROR_HASH:=a1b66b5b111f569910469f1b13e9db0385f386644ec1001fd5e6f1086fa6eb74
+PKG_MIRROR_HASH:=4b5f2e5597dad646e0f1cef2e04540216b3f62b07e623e7f738a0bd5815483d1
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2024-02-01
-PKG_SOURCE_VERSION:=7bdc911e1c14cac9448c3b9f68bf5392cc318849
+PKG_SOURCE_DATE:=2024-03-28
+PKG_SOURCE_VERSION:=358f13d1749cac4b314c8fa4187f65dfa7ef1813
 PKG_MAINTAINER:=Rin Cat <dev@rincat.ch>
 PKG_BUILD_PARALLEL:=1
 
@@ -49,7 +49,7 @@ define Build/Prepare
 		cd $(TOPDIR); \
 		REBUILD_PATCHED=0; \
 		for PATCH in $$PATCHDIR/openwrt_patches/*; do \
-			if ! git apply -q -R --check <$$PATCH; then \
+			if ! git apply -R --check <$$PATCH >> /dev/null; then \
 				git apply -v <$$PATCH; \
 				REBUILD_PATCHED=1; \
 			fi; \
