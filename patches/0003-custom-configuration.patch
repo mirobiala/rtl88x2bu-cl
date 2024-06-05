@@ -3,11 +3,11 @@ Date: Mon Sep 18 10:15:35 EEST 2023
 Subject: [PATCH 3/3] Custom configurations.
 
 ---
- core/rtw_ap.c                 |   4 +---
- os_dep/linux/os_intfs.c       |  18 +++++++++++++-----
- os_dep/linux/ioctl_cfg80211.c | 100 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++------------------
- os_dep/linux/rtw_proc.c       |   2 ++
- 4 files changed, 98 insertions(+), 26 deletions(-)
+ core/rtw_ap.c                 |  4 +---
+ os_dep/linux/os_intfs.c       | 18 +++++++++++++-----
+ os_dep/linux/ioctl_cfg80211.c | 99 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++------------------
+ os_dep/linux/rtw_proc.c       |  2 ++
+ 4 files changed, 97 insertions(+), 26 deletions(-)
 
 diff --git a/core/rtw_ap.c b/core/rtw_ap.c
 index ec72564..b2e8cbb 100644
@@ -230,7 +230,7 @@ index f7b59a8..3f9474b 100644
  };
 
  struct ieee80211_iface_combination rtw_combinations[] = {
-@@ -10169,6 +10223,16 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
+@@ -10169,6 +10223,15 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
  
  #if defined(CONFIG_RTW_80211K) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0))
  	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_RRM);
@@ -238,7 +238,6 @@ index f7b59a8..3f9474b 100644
 +	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_SET_SCAN_DWELL);
 +	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_FILS_STA);
 +	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_CQM_RSSI_LIST);
-+	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_CONTROL_PORT_OVER_NL80211);
 +	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_AQL);
 +	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_DEL_IBSS_STA);
 +	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_SCAN_FREQ_KHZ);

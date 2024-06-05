@@ -7,7 +7,7 @@ PKG_RELEASE=2
 PKG_LICENSE:=GPLv2
 
 PKG_SOURCE_URL:=https://github.com/RinCat/RTL88x2BU-Linux-Driver
-PKG_MIRROR_HASH:=4b5f2e5597dad646e0f1cef2e04540216b3f62b07e623e7f738a0bd5815483d1
+PKG_MIRROR_HASH:=7c8c3b5192cf1d3a349eba388bd33e99d65c7cb5d094ed01066ee8e782282fe2
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_DATE:=2024-03-28
 PKG_SOURCE_VERSION:=358f13d1749cac4b314c8fa4187f65dfa7ef1813
@@ -43,21 +43,23 @@ endif
 
 NOSTDINC_FLAGS+=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DBUILD_OPENWRT
 
+define OpenWRT/Patch
+$(shell \
+	PATCHDIR=$$(pwd); \
+	cd $(TOPDIR); \
+	for PATCH in $$PATCHDIR/openwrt_patches/*; do \
+		if ! git apply -R --check <$$PATCH >/dev/null 2>&1; then \
+			git apply -v <$$PATCH; \
+			PACKAGE=$$(cat $$PATCH | grep -o "[a-zA-Z0-9]*\/patches" | grep -o "[a-zA-Z0-9]*" | head -n 1); \
+			$$(make package/$$PACKAGE/compile); \
+		fi; \
+	done; \
+)
+endef
+
 define Build/Prepare
+	$(call OpenWRT/Patch)
 	$(call Build/Prepare/Default)
-	$(shell PATCHDIR=$$(pwd); \
-		cd $(TOPDIR); \
-		REBUILD_PATCHED=0; \
-		for PATCH in $$PATCHDIR/openwrt_patches/*; do \
-			if ! git apply -R --check <$$PATCH >> /dev/null; then \
-				git apply -v <$$PATCH; \
-				REBUILD_PATCHED=1; \
-			fi; \
-		done; \
-		if [ $$REBUILD_PATCHED -eq 1 ] ; then \
-			$$(make package/iwinfo/compile); \
-		fi \
-	)
 endef
 
 define Build/Compile
