@@ -1,19 +1,8 @@
-From: Miroslav Dimitrov <mirobiala@gmail.com>
-Date: Mon Sep 18 10:15:35 EEST 2023
-Subject: [PATCH 3/3] Custom configurations.
-
----
- core/rtw_ap.c                 |  4 +---
- os_dep/linux/os_intfs.c       | 18 +++++++++++++-----
- os_dep/linux/ioctl_cfg80211.c | 99 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++------------------
- os_dep/linux/rtw_proc.c       |  2 ++
- 4 files changed, 97 insertions(+), 26 deletions(-)
-
 diff --git a/core/rtw_ap.c b/core/rtw_ap.c
 index ec72564..b2e8cbb 100644
 --- a/core/rtw_ap.c
 +++ b/core/rtw_ap.c
-@@ -2437,9 +2437,7 @@ int rtw_check_beacon_data(_adapter *padapter, u8 *pbuf,  int len)
+@@ -2433,9 +2433,7 @@ int rtw_check_beacon_data(_adapter *padapter, u8 *pbuf,  int len)
  
  		/* Parsing VHT OPERATION IE */
  
@@ -70,30 +59,6 @@ index 1d50aa5..fa26b29 100644
  int rtw_bfer_rf_number = 0; /*BeamformerCapRfNum Rf path number, 0 for auto, others for manual*/
  int rtw_bfee_rf_number = 0; /*BeamformeeCapRfNum  Rf path number, 0 for auto, others for manual*/
  
-@@ -2194,7 +2196,11 @@ int rtw_os_ndev_register(_adapter *adapter, const char *name)
- 	if (rtnl_lock_needed)
- 		ret = (register_netdev(ndev) == 0) ? _SUCCESS : _FAIL;
- 	else
-+#if defined(CONFIG_IOCTL_CFG80211)
-+		ret = (cfg80211_register_netdevice(ndev) == 0) ? _SUCCESS : _FAIL;
-+#else
- 		ret = (register_netdevice(ndev) == 0) ? _SUCCESS : _FAIL;
-+#endif
-
- 	if (ret == _SUCCESS)
- 		adapter->registered = 1;
-@@ -2243,7 +2249,11 @@ void rtw_os_ndev_unregister(_adapter *adapter)
- 		if (rtnl_lock_needed)
- 			unregister_netdev(netdev);
- 		else
-+#if defined(CONFIG_IOCTL_CFG80211)
-+			cfg80211_unregister_netdevice(netdev);
-+#else
- 			unregister_netdevice(netdev);
-+#endif
- 	}
-
- #if defined(CONFIG_IOCTL_CFG80211) && !defined(RTW_SINGLE_WIPHY)
 diff --git a/os_dep/linux/ioctl_cfg80211.c b/os_dep/linux/ioctl_cfg80211.c
 index f7b59a8..3f9474b 100644
 --- a/os_dep/linux/ioctl_cfg80211.c
@@ -106,7 +71,7 @@ index f7b59a8..3f9474b 100644
  #define STATION_INFO_TX_BITRATE		BIT(NL80211_STA_INFO_TX_BITRATE)
  #define STATION_INFO_RX_PACKETS		BIT(NL80211_STA_INFO_RX_PACKETS)
  #define STATION_INFO_TX_PACKETS		BIT(NL80211_STA_INFO_TX_PACKETS)
-@@ -2491,6 +2492,26 @@ static void rtw_cfg80211_fill_mesh_only_sta_info(struct mesh_plink_ent *plink, s
+@@ -2494,6 +2495,26 @@ static void rtw_cfg80211_fill_mesh_only_sta_info(struct mesh_plink_ent *plink, s
  }
  #endif /* CONFIG_RTW_MESH */
  
@@ -133,7 +98,7 @@ index f7b59a8..3f9474b 100644
  static int cfg80211_rtw_get_station(struct wiphy *wiphy,
  	struct net_device *ndev,
  #if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 16, 0))
-@@ -2570,6 +2591,53 @@ static int cfg80211_rtw_get_station(struct wiphy *wiphy,
+@@ -2573,6 +2594,53 @@ static int cfg80211_rtw_get_station(struct wiphy *wiphy,
  		}
  		sinfo->filled |= STATION_INFO_INACTIVE_TIME;
  		sinfo->inactive_time = rtw_get_passing_time_ms(psta->sta_stats.last_rx_time);
@@ -187,7 +152,7 @@ index f7b59a8..3f9474b 100644
  		sinfo->filled |= STATION_INFO_RX_PACKETS;
  		sinfo->rx_packets = sta_rx_data_pkts(psta);
  		sinfo->filled |= STATION_INFO_TX_PACKETS;
-@@ -6052,18 +6120,7 @@ static int	cfg80211_rtw_dump_station(struct wiphy *wiphy, struct net_device *nde
+@@ -6117,18 +6185,7 @@ static int	cfg80211_rtw_dump_station(struct wiphy *wiphy, struct net_device *nde
  	#endif
  	
  	sinfo->filled = 0;
@@ -207,7 +172,7 @@ index f7b59a8..3f9474b 100644
  
  exit:
  	return ret;
-@@ -9973,6 +10030,9 @@ struct ieee80211_iface_limit rtw_limits[] = {
+@@ -10046,6 +10103,9 @@ struct ieee80211_iface_limit rtw_limits[] = {
  	{
  		.max = rtw_min(CONFIG_IFACE_NUMBER, CONFIG_LIMITED_AP_NUM),
  		.types = BIT(NL80211_IFTYPE_AP)
@@ -217,7 +182,7 @@ index f7b59a8..3f9474b 100644
  			#if defined(CONFIG_P2P) && ((LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE))
  			| BIT(NL80211_IFTYPE_P2P_GO)
  			#endif
-@@ -9984,12 +10044,6 @@ struct ieee80211_iface_limit rtw_limits[] = {
+@@ -10057,12 +10117,6 @@ struct ieee80211_iface_limit rtw_limits[] = {
  		.types = BIT(NL80211_IFTYPE_P2P_DEVICE)
  	},
  	#endif
@@ -230,7 +195,7 @@ index f7b59a8..3f9474b 100644
  };
 
  struct ieee80211_iface_combination rtw_combinations[] = {
-@@ -10169,6 +10223,15 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
+@@ -10242,6 +10293,12 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
  
  #if defined(CONFIG_RTW_80211K) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0))
  	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_RRM);
@@ -240,9 +205,6 @@ index f7b59a8..3f9474b 100644
 +	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_CQM_RSSI_LIST);
 +	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_AQL);
 +	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_DEL_IBSS_STA);
-+	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_SCAN_FREQ_KHZ);
-+	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_SCAN_RANDOM_SN);
-+	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_SCAN_MIN_PREQ_CONTENT);
  #endif
  
  #ifdef CONFIG_NET_NS
@@ -259,5 +221,3 @@ index c78af83..cc3346e 100644
  	rtw_adapter_proc_init(dev);
  
  }
--- 
-1.0.0

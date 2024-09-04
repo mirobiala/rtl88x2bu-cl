@@ -1,6 +1,6 @@
-# rtl88x2bu package for OpenWRT (v23.05.3)
+# rtl88x2bu package for OpenWRT (v23.05.4)
 This package uses [Realtek 88x2BU driver](https://github.com/RinCat/RTL88x2BU-Linux-Driver) by [@RinCat](https://github.com/RinCat) with patches for [OpenWRT](https://openwrt.org/).
-I tested it with [TP-Link Archer T3U Nano](https://www.tp-link.com/us/home-networking/usb-adapter/archer-t3u-nano/) and [OpenWRT v23.05.3](https://openwrt.org/releases/23.05/notes-23.05.3).
+I tested it with [TP-Link Archer T3U Nano](https://www.tp-link.com/us/home-networking/usb-adapter/archer-t3u-nano/) and [OpenWRT v23.05.4](https://openwrt.org/releases/23.05/notes-23.05.4).
 
 **Note:** No need for patching `mac80211.sh` with this package.
 
@@ -75,7 +75,7 @@ git pull
 ```
 git branch -a
 git tag
-git checkout v23.05.3
+git checkout v23.05.4
 ```
 * Update the feeds:
 ```
@@ -91,12 +91,12 @@ git clone https://github.com/mirobiala/rtl88x2bu-cl package/kernel/rtl88x2bu-cl
 cd package/kernel/rtl88x2bu-cl
 git branch -a
 git tag
-git checkout v1.1.2
+git checkout v1.1.3
 cd ../../../
 ```
 * Download the default config for the **desired** target:
 ```
-wget https://downloads.openwrt.org/releases/23.05.3/targets/<target>/config.buildinfo -O .config
+wget https://downloads.openwrt.org/releases/23.05.4/targets/<target>/config.buildinfo -O .config
 ```
 * Compile and build the [OpenWRT](https://openwrt.org/) image.
 ```
