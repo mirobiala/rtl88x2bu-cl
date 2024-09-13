@@ -3,7 +3,10 @@
 @@ -0,0 +1,27 @@
 +--- a/devices.txt
 ++++ b/devices.txt
-+@@ -235,6 +235,24 @@
++@@ -244,6 +244,24 @@
++ # rtl8xxxu/rtl8xxxu_core.c
++ 0x0000 0x0000 0x0bda 0x8176    0      0  "Realtek" "RTL8188CU"
++ 0x0000 0x0000 0x0bda 0xf179    0      0  "Realtek" "RTL8188FTV"
 + # mt7615/usb.c
 + 0x0000 0x0000 0x0e8d 0x7663    0      0  "MediaTek" "MT7663U"
 + 0x0000 0x0000 0x043e 0x310c    0      0  "LG" "LGSBWAC02"
@@ -25,6 +28,6 @@
 ++0x0000 0x0000 0x2357 0x0138    0      0  "TP-Link" "Archer T3U Plus"
 ++0x0000 0x0000 0x2357 0x0115    0      0  "TP-Link" "Archer T4U V3"
 ++0x0000 0x0000 0x20F4 0x808A    0      0  "TRENDnet" "TEW-808UBM"
-+ 
++
 + # FDT compatible strings
 + # "compatible" | txpower offset | frequency offset | ...
