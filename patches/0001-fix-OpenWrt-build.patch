@@ -28,7 +28,7 @@ index e98e3ca..128de80 100644
  CONFIG_PLATFORM_ANDROID_X86 = n
  CONFIG_PLATFORM_ANDROID_INTEL_X86 = n
  CONFIG_PLATFORM_JB_X86 = n
-@@ -1336,6 +1337,33 @@ ifeq ($(CONFIG_RTW_IOCTL_SET_COUNTRY), y)
+@@ -1336,6 +1337,38 @@ ifeq ($(CONFIG_RTW_IOCTL_SET_COUNTRY), y)
  EXTRA_CFLAGS += -DCONFIG_RTW_IOCTL_SET_COUNTRY
  endif
  
@@ -40,16 +40,21 @@ index e98e3ca..128de80 100644
 +		-DCONFIG_LITTLE_ENDIAN \
 +		-DCONFIG_IOCTL_CFG80211 \
 +		-DRTW_USE_CFG80211_STA_EVENT \
-+		-DCONFIG_RTW_CHPLAN=0x76 \
++		-DRTW_IPS_MODE=0 \
++		-DRTW_LPS_MODE=0 \
++		-DRTW_WOW_LPS_MODE=0 \
 +		-DCONFIG_TDLS \
 +		-DCONFIG_RTW_MESH \
 +		-DCONFIG_RTW_MULTI_AP \
 +		-DCONFIG_CALIBRATE_TX_POWER_TO_MAX \
-+		-DCONFIG_P2P \
++		-DRTW_P2P_GROUP_INTERFACE=1 \
 +		-DCONFIG_FORCE_SW_CHANNEL_PLAN \
 +		-DCONFIG_CONCURRENT_MODE \
 +		-DCONFIG_IFACE_NUMBER=4 \
 +		-DCONFIG_QOS_OPTIMIZATION \
++		-DRTW_REDUCE_SCAN_SWITCH_CH_TIME \
++		-DCONFIG_RTW_ADAPTIVITY_EN=1 \
++		-DCONFIG_RTW_UP_MAPPING_RULE=1 \
 +		-Wno-error
 +
 +USER_MODULE_NAME := rtl$(MODULE_NAME)
@@ -62,8 +67,20 @@ index e98e3ca..128de80 100644
  ifeq ($(CONFIG_PLATFORM_I386_PC), y)
  EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
  EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
+diff --git a/core/mesh/rtw_mesh.c b/core/mesh/rtw_mesh.c
+index fad46e8..5da72f4 100644
+--- a/core/mesh/rtw_mesh.c
++++ b/core/mesh/rtw_mesh.c
+@@ -3022,6 +3022,7 @@ static void rtw_mpath_tx_queue_flush(_adapter *adapter)
+ 
+ #ifdef PLATFORM_LINUX /* 3.10 ~ 4.13 checked */
+ #if defined(CONFIG_SLUB)
++#include <../mm/slab.h>
+ #include <linux/slub_def.h>
+ #elif defined(CONFIG_SLAB)
+ #include <linux/slab_def.h>
 diff --git a/os_dep/linux/ioctl_cfg80211.c b/os_dep/linux/ioctl_cfg80211.c
-index f7b59a8..ac1e0b2 100644
+index 1b042f6..3a1caa4 100755
 --- a/os_dep/linux/ioctl_cfg80211.c
 +++ b/os_dep/linux/ioctl_cfg80211.c
 @@ -457,7 +457,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapter *adapter, u8 ch, u8 bw, u8 offset,
@@ -71,7 +88,7 @@ index f7b59a8..ac1e0b2 100644
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0))
  	if (started) {
 -#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)) && (LINUX_VERSION_CODE < KERNEL_VERSION(6, 9, 0))
-+#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)) && (LINUX_VERSION_CODE < KERNEL_VERSION(6, 9, 0)) || defined(BUILD_OPENWRT))
++#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)) && (LINUX_VERSION_CODE < KERNEL_VERSION(6, 9, 0)) && !defined(BUILD_OPENWRT))
  		cfg80211_ch_switch_started_notify(adapter->pnetdev, &chdef, 0, 0, false, 0);
  #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
  		cfg80211_ch_switch_started_notify(adapter->pnetdev, &chdef, 0, 0, false);
@@ -80,91 +97,47 @@ index f7b59a8..ac1e0b2 100644
  		goto exit;
  
 -#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)) && (LINUX_VERSION_CODE < KERNEL_VERSION(6, 9, 0))
-+#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)) && (LINUX_VERSION_CODE < KERNEL_VERSION(6, 9, 0)) || defined(BUILD_OPENWRT))
++#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)) && (LINUX_VERSION_CODE < KERNEL_VERSION(6, 9, 0)) && !defined(BUILD_OPENWRT))
  	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0, 0);
  #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
  	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0);
-@@ -1152,7 +1152,7 @@ check_bss:
- 		#endif
- 
- 		#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
--		#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
-+		#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0) || defined(BUILD_OPENWRT)
- 		roam_info.links[0].bssid = cur_network->network.MacAddress;
- 		#else
- 		roam_info.bssid = cur_network->network.MacAddress;
-@@ -1916,7 +1916,7 @@ exit:
+@@ -5457,7 +5457,7 @@ exit:
  }
  
- static int cfg80211_rtw_add_key(struct wiphy *wiphy, struct net_device *ndev
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(BUILD_OPENWRT))
- 	, int link_id
- #endif
- 	, u8 key_index
-@@ -2081,7 +2081,7 @@ addkey_end:
- }
- 
- static int cfg80211_rtw_get_key(struct wiphy *wiphy, struct net_device *ndev
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(BUILD_OPENWRT))
- 	, int link_id
- #endif
- 	, u8 keyid
-@@ -2272,7 +2272,7 @@ exit:
- }
- 
- static int cfg80211_rtw_del_key(struct wiphy *wiphy, struct net_device *ndev,
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(BUILD_OPENWRT))
- 				int link_id,
- #endif
- #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
-@@ -2295,7 +2295,7 @@ static int cfg80211_rtw_del_key(struct wiphy *wiphy, struct net_device *ndev,
- }
- 
- static int cfg80211_rtw_set_default_key(struct wiphy *wiphy, struct net_device *ndev,
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(BUILD_OPENWRT))
- 	int link_id,
- #endif
- 	u8 key_index
-@@ -2346,7 +2346,7 @@ static int cfg80211_rtw_set_default_key(struct wiphy *wiphy, struct net_device *
- 
- #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 30))
- int cfg80211_rtw_set_default_mgmt_key(struct wiphy *wiphy, struct net_device *ndev,
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) || defined(BUILD_OPENWRT))
- 	int link_id,
- #endif
- 	u8 key_index)
-@@ -5478,7 +5478,7 @@ static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *nd
- 	return ret;
- }
- 
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(BUILD_OPENWRT))
- static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev, unsigned int link_id)
+ static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *ndev,
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0))
++#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0)) || defined(BUILD_OPENWRT))
+ 		struct cfg80211_ap_update *ap)
  #else
- static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev)
-@@ -6864,7 +6864,7 @@ exit:
- #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
- static int cfg80211_rtw_get_channel(struct wiphy *wiphy,
- 	struct wireless_dev *wdev,
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(BUILD_OPENWRT))
- 	unsigned int link_id,
- #endif
- 	struct cfg80211_chan_def *chandef)
-@@ -10808,7 +10808,7 @@ void rtw_wdev_unregister(struct wireless_dev *wdev)
- 	rtw_cfg80211_indicate_scan_done(adapter, _TRUE);
+ 		struct cfg80211_beacon_data *info)
+@@ -5468,7 +5468,7 @@ static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *nd
  
- 	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)) || defined(COMPAT_KERNEL_RELEASE)
--	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
-+	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2) || defined(BUILD_OPENWRT))
- 	if (wdev->links[0].client.current_bss) {
- 	#else
- 	if (wdev->current_bss) {
+ 	RTW_INFO(FUNC_NDEV_FMT"\n", FUNC_NDEV_ARG(ndev));
+ 
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0))
++#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0)) || defined(BUILD_OPENWRT))
+ 	ret = rtw_add_beacon(adapter, ap->beacon.head, ap->beacon.head_len,
+ 		ap->beacon.tail, ap->beacon.tail_len);
+ #else
+@@ -6955,7 +6955,7 @@ static void rtw_get_chbwoff_from_cfg80211_chan_def(
+ #endif /* (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)) */
+ 
+ static int cfg80211_rtw_set_monitor_channel(struct wiphy *wiphy
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 13, 0))
++#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(6, 13, 0)) || defined(BUILD_OPENWRT))
+ 	, struct net_device *dev
+ #endif
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
+@@ -8512,6 +8512,9 @@ static int cfg80211_rtw_tdls_mgmt(struct wiphy *wiphy,
+ 	const u8 *peer,
+ #else
+ 	u8 *peer,
++#endif
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 5, 0))
++	int link_id,
+ #endif
+ 	u8 action_code,
+ 	u8 dialog_token,
 diff --git a/os_dep/linux/os_intfs.c b/os_dep/linux/os_intfs.c
 index 1d50aa5..3135dd4 100644
 --- a/os_dep/linux/os_intfs.c
