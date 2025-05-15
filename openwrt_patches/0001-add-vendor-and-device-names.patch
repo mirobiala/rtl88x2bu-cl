@@ -3,10 +3,10 @@
 @@ -0,0 +1,27 @@
 +--- a/devices.txt
 ++++ b/devices.txt
-+@@ -245,6 +245,24 @@
-+ # rtl8xxxu/rtl8xxxu_core.c
-+ 0x0000 0x0000 0x0bda 0x8176    0      0  "Realtek" "RTL8188CU"
-+ 0x0000 0x0000 0x0bda 0xf179    0      0  "Realtek" "RTL8188FTV"
++@@ -241,6 +241,24 @@
++ # mt7615/usb.c
++ 0x0000 0x0000 0x0e8d 0x7663    0      0  "MediaTek" "MT7663U"
++ 0x0000 0x0000 0x043e 0x310c    0      0  "LG" "LGSBWAC02"
 ++# rtl88x2bu-cl/os_dep/linux/usb_intf.c
 ++0x0000 0x0000 0x13b1 0x0043    0      0  "Alpha" "Alpha"
 ++0x0000 0x0000 0x0b05 0x1841    0      0  "ASUS" "AC1300 USB-AC55 B1"

@@ -163,7 +163,7 @@ index f7b59a8..3f9474b 100644
  
  exit:
  	return ret;
-@@ -10055,6 +10112,9 @@ struct ieee80211_iface_limit rtw_limits[] = {
+@@ -10052,6 +10109,9 @@ struct ieee80211_iface_limit rtw_limits[] = {
  	{
  		.max = rtw_min(CONFIG_IFACE_NUMBER, CONFIG_LIMITED_AP_NUM),
  		.types = BIT(NL80211_IFTYPE_AP)
@@ -173,7 +173,7 @@ index f7b59a8..3f9474b 100644
  			#if defined(CONFIG_P2P) && ((LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE))
  			| BIT(NL80211_IFTYPE_P2P_GO)
  			#endif
-@@ -10066,12 +10126,6 @@ struct ieee80211_iface_limit rtw_limits[] = {
+@@ -10063,12 +10123,6 @@ struct ieee80211_iface_limit rtw_limits[] = {
  		.types = BIT(NL80211_IFTYPE_P2P_DEVICE)
  	},
  	#endif
@@ -186,7 +186,7 @@ index f7b59a8..3f9474b 100644
  };
 
  struct ieee80211_iface_combination rtw_combinations[] = {
-@@ -10251,6 +10302,12 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
+@@ -10248,6 +10299,12 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
  
  #if defined(CONFIG_RTW_80211K) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0))
  	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_RRM);
