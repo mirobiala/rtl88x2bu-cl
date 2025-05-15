@@ -50,15 +50,6 @@ index 1d50aa5..fa26b29 100644
  #endif
  module_param(rtw_stbc_cap, int, 0644);
  /*
-@@ -312,7 +312,7 @@ module_param(rtw_stbc_cap, int, 0644);
- * BIT4: Enable HT Beamformer
- * BIT5: Enable HT Beamformee
- */
--int rtw_beamform_cap = BIT(1) | BIT(3);
-+int rtw_beamform_cap = 0x3f;
- int rtw_bfer_rf_number = 0; /*BeamformerCapRfNum Rf path number, 0 for auto, others for manual*/
- int rtw_bfee_rf_number = 0; /*BeamformeeCapRfNum  Rf path number, 0 for auto, others for manual*/
- 
 diff --git a/os_dep/linux/ioctl_cfg80211.c b/os_dep/linux/ioctl_cfg80211.c
 index f7b59a8..3f9474b 100644
 --- a/os_dep/linux/ioctl_cfg80211.c
@@ -152,7 +143,7 @@ index f7b59a8..3f9474b 100644
  		sinfo->filled |= STATION_INFO_RX_PACKETS;
  		sinfo->rx_packets = sta_rx_data_pkts(psta);
  		sinfo->filled |= STATION_INFO_TX_PACKETS;
-@@ -6117,18 +6185,7 @@ static int	cfg80211_rtw_dump_station(struct wiphy *wiphy, struct net_device *nde
+@@ -6120,18 +6188,7 @@ static int	cfg80211_rtw_dump_station(struct wiphy *wiphy, struct net_device *nde
  	#endif
  	
  	sinfo->filled = 0;
@@ -172,7 +163,7 @@ index f7b59a8..3f9474b 100644
  
  exit:
  	return ret;
-@@ -10049,6 +10106,9 @@ struct ieee80211_iface_limit rtw_limits[] = {
+@@ -10055,6 +10112,9 @@ struct ieee80211_iface_limit rtw_limits[] = {
  	{
  		.max = rtw_min(CONFIG_IFACE_NUMBER, CONFIG_LIMITED_AP_NUM),
  		.types = BIT(NL80211_IFTYPE_AP)
@@ -182,7 +173,7 @@ index f7b59a8..3f9474b 100644
  			#if defined(CONFIG_P2P) && ((LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE))
  			| BIT(NL80211_IFTYPE_P2P_GO)
  			#endif
-@@ -10060,12 +10120,6 @@ struct ieee80211_iface_limit rtw_limits[] = {
+@@ -10066,12 +10126,6 @@ struct ieee80211_iface_limit rtw_limits[] = {
  		.types = BIT(NL80211_IFTYPE_P2P_DEVICE)
  	},
  	#endif
@@ -195,7 +186,7 @@ index f7b59a8..3f9474b 100644
  };
 
  struct ieee80211_iface_combination rtw_combinations[] = {
-@@ -10245,6 +10299,12 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
+@@ -10251,6 +10302,12 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
  
  #if defined(CONFIG_RTW_80211K) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0))
  	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_RRM);
