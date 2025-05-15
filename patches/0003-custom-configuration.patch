@@ -143,7 +143,7 @@ index f7b59a8..3f9474b 100644
  		sinfo->filled |= STATION_INFO_RX_PACKETS;
  		sinfo->rx_packets = sta_rx_data_pkts(psta);
  		sinfo->filled |= STATION_INFO_TX_PACKETS;
-@@ -6117,18 +6185,7 @@ static int	cfg80211_rtw_dump_station(struct wiphy *wiphy, struct net_device *nde
+@@ -6120,18 +6188,7 @@ static int	cfg80211_rtw_dump_station(struct wiphy *wiphy, struct net_device *nde
  	#endif
  	
  	sinfo->filled = 0;
@@ -163,7 +163,7 @@ index f7b59a8..3f9474b 100644
  
  exit:
  	return ret;
-@@ -10052,6 +10109,9 @@ struct ieee80211_iface_limit rtw_limits[] = {
+@@ -10055,6 +10112,9 @@ struct ieee80211_iface_limit rtw_limits[] = {
  	{
  		.max = rtw_min(CONFIG_IFACE_NUMBER, CONFIG_LIMITED_AP_NUM),
  		.types = BIT(NL80211_IFTYPE_AP)
@@ -173,7 +173,7 @@ index f7b59a8..3f9474b 100644
  			#if defined(CONFIG_P2P) && ((LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE))
  			| BIT(NL80211_IFTYPE_P2P_GO)
  			#endif
-@@ -10063,12 +10123,6 @@ struct ieee80211_iface_limit rtw_limits[] = {
+@@ -10066,12 +10126,6 @@ struct ieee80211_iface_limit rtw_limits[] = {
  		.types = BIT(NL80211_IFTYPE_P2P_DEVICE)
  	},
  	#endif
@@ -186,7 +186,7 @@ index f7b59a8..3f9474b 100644
  };
 
  struct ieee80211_iface_combination rtw_combinations[] = {
-@@ -10248,6 +10299,12 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
+@@ -10251,6 +10302,12 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
  
  #if defined(CONFIG_RTW_80211K) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0))
  	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_RRM);
@@ -212,16 +212,3 @@ index c78af83..cc3346e 100644
  	rtw_adapter_proc_init(dev);
  
  }
-diff --git a/include/autoconf.h b/include/autoconf.h
-index 584491b..240996d 100644
---- a/include/autoconf.h
-+++ b/include/autoconf.h
-@@ -75,7 +75,7 @@
- 
- #define CONFIG_XMIT_ACK
- #ifdef CONFIG_XMIT_ACK
--	#define CONFIG_ACTIVE_KEEP_ALIVE_CHECK
-+//	#define CONFIG_ACTIVE_KEEP_ALIVE_CHECK
- #endif
- 
- #define CONFIG_RECV_REORDERING_CTRL	1

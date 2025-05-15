@@ -1,5 +1,5 @@
 --- /dev/null
-+++ b/package/network/utils/iwinfo/patches/001-rtl88x2bu-cl.patch
++++ b/package/network/utils/iwinfo/patches/999-rtl88x2bu-cl.patch
 @@ -0,0 +1,27 @@
 +--- a/devices.txt
 ++++ b/devices.txt
@@ -25,6 +25,6 @@
 ++0x0000 0x0000 0x2357 0x0138    0      0  "TP-Link" "Archer T3U Plus"
 ++0x0000 0x0000 0x2357 0x0115    0      0  "TP-Link" "Archer T4U V3"
 ++0x0000 0x0000 0x20F4 0x808A    0      0  "TRENDnet" "TEW-808UBM"
-+
++ 
 + # FDT compatible strings
 + # "compatible" | txpower offset | frequency offset | ...

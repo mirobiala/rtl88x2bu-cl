@@ -28,7 +28,7 @@ index e98e3ca..128de80 100644
  CONFIG_PLATFORM_ANDROID_X86 = n
  CONFIG_PLATFORM_ANDROID_INTEL_X86 = n
  CONFIG_PLATFORM_JB_X86 = n
-@@ -1336,6 +1337,38 @@ ifeq ($(CONFIG_RTW_IOCTL_SET_COUNTRY), y)
+@@ -1336,6 +1337,35 @@ ifeq ($(CONFIG_RTW_IOCTL_SET_COUNTRY), y)
  EXTRA_CFLAGS += -DCONFIG_RTW_IOCTL_SET_COUNTRY
  endif
  
@@ -46,15 +46,12 @@ index e98e3ca..128de80 100644
 +		-DCONFIG_TDLS \
 +		-DCONFIG_RTW_MESH \
 +		-DCONFIG_RTW_MULTI_AP \
-+		-DCONFIG_CALIBRATE_TX_POWER_TO_MAX \
 +		-DRTW_P2P_GROUP_INTERFACE=1 \
 +		-DCONFIG_FORCE_SW_CHANNEL_PLAN \
 +		-DCONFIG_CONCURRENT_MODE \
 +		-DCONFIG_IFACE_NUMBER=4 \
 +		-DCONFIG_QOS_OPTIMIZATION \
 +		-DRTW_REDUCE_SCAN_SWITCH_CH_TIME \
-+		-DCONFIG_RTW_ADAPTIVITY_EN=1 \
-+		-DCONFIG_RTW_UP_MAPPING_RULE=1 \
 +		-Wno-error
 +
 +USER_MODULE_NAME := rtl$(MODULE_NAME)
@@ -101,7 +98,7 @@ index 1b042f6..3a1caa4 100755
  	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0, 0);
  #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
  	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0);
-@@ -5457,7 +5457,7 @@ exit:
+@@ -5460,7 +5460,7 @@ exit:
  }
  
  static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *ndev,
@@ -110,7 +107,7 @@ index 1b042f6..3a1caa4 100755
  		struct cfg80211_ap_update *ap)
  #else
  		struct cfg80211_beacon_data *info)
-@@ -5468,7 +5468,7 @@ static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *nd
+@@ -5471,7 +5471,7 @@ static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *nd
  
  	RTW_INFO(FUNC_NDEV_FMT"\n", FUNC_NDEV_ARG(ndev));
  
@@ -119,7 +116,7 @@ index 1b042f6..3a1caa4 100755
  	ret = rtw_add_beacon(adapter, ap->beacon.head, ap->beacon.head_len,
  		ap->beacon.tail, ap->beacon.tail_len);
  #else
-@@ -6955,7 +6955,7 @@ static void rtw_get_chbwoff_from_cfg80211_chan_def(
+@@ -6958,7 +6958,7 @@ static void rtw_get_chbwoff_from_cfg80211_chan_def(
  #endif /* (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)) */
  
  static int cfg80211_rtw_set_monitor_channel(struct wiphy *wiphy
@@ -128,7 +125,7 @@ index 1b042f6..3a1caa4 100755
  	, struct net_device *dev
  #endif
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
-@@ -8512,6 +8512,9 @@ static int cfg80211_rtw_tdls_mgmt(struct wiphy *wiphy,
+@@ -8515,6 +8515,9 @@ static int cfg80211_rtw_tdls_mgmt(struct wiphy *wiphy,
  	const u8 *peer,
  #else
  	u8 *peer,
