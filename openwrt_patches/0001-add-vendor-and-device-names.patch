@@ -1,5 +1,5 @@
 --- /dev/null
-+++ b/package/network/utils/iwinfo/patches/0001-rtl88x2bu-cl.patch
++++ b/package/network/utils/iwinfo/patches/999-rtl88x2bu-cl.patch
 @@ -0,0 +1,62 @@
 +--- a/devices.txt
 ++++ b/devices.txt

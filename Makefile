@@ -7,10 +7,10 @@ PKG_RELEASE=2
 PKG_LICENSE:=GPLv2
 
 PKG_SOURCE_URL:=https://github.com/RinCat/RTL88x2BU-Linux-Driver
-PKG_MIRROR_HASH:=a1b66b5b111f569910469f1b13e9db0385f386644ec1001fd5e6f1086fa6eb74
+PKG_MIRROR_HASH:=150764318aa3cccfe74b655748aa69ffe3820bbc8421e889018dd8f8de6be22d
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2024-02-01
-PKG_SOURCE_VERSION:=7bdc911e1c14cac9448c3b9f68bf5392cc318849
+PKG_SOURCE_DATE:=2025-05-26
+PKG_SOURCE_VERSION:=1f0005d9be0f4471b3b83d8172cd109a2b7855e8
 PKG_MAINTAINER:=Rin Cat <dev@rincat.ch>
 PKG_BUILD_PARALLEL:=1
 
@@ -36,29 +36,40 @@ NOSTDINC_FLAGS := \
 	-I$(STAGING_DIR)/usr/include/mac80211/uapi \
 	-include backport/backport.h
 
+define KernelPackage/rtl88x2bu-cl/config
+$(shell \
+	PATCHDIR=$$(pwd); \
+	cd $(TOPDIR); \
+	for PATCH in $$PATCHDIR/openwrt_patches/*; do \
+		if ! git apply -R --check <$$PATCH >/dev/null 2>&1; then \
+			git apply -v <$$PATCH; \
+		fi; \
+	done; \
+)
+endef
+
 # from Makefile: obj-(CONFIG_RTL8822BU) = ...
 ifdef CONFIG_PACKAGE_kmod-rtl88x2bu-cl
    PKG_MAKE_FLAGS += CONFIG_RTL8822BU=m
 endif
 
-NOSTDINC_FLAGS+=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DBUILD_OPENWRT
-
-define Build/Prepare
-	$(call Build/Prepare/Default)
-	$(shell PATCHDIR=$$(pwd); \
-		cd $(TOPDIR); \
-		REBUILD_PATCHED=0; \
-		for PATCH in $$PATCHDIR/openwrt_patches/*; do \
-			if ! git apply -R --check <$$PATCH >> /dev/null; then \
-				git apply -v <$$PATCH; \
-				REBUILD_PATCHED=1; \
-			fi; \
-		done; \
-		if [ $$REBUILD_PATCHED -eq 1 ] ; then \
-			$$(make package/iwinfo/compile); \
-		fi \
-	)
+define OpenWRT/Clean
+$(shell \
+	PATCHDIR=$$(pwd); \
+	cd $(TOPDIR); \
+	for PATCH in $$PATCHDIR/openwrt_patches/*; do \
+		FILE=$$(cat $$PATCH | grep "+++ b/" | head -n 1 | grep -o "package/.*"); \
+		if [ -f $$FILE ]; then rm $$FILE; fi; \
+	done; \
+)
 endef
+
+define Build/Clean
+	$(call OpenWRT/Clean)
+	$(call Build/Clean/Default)
+endef
+
+NOSTDINC_FLAGS+=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DBUILD_OPENWRT
 
 define Build/Compile
 	+$(KERNEL_MAKE) $(PKG_JOBS) \

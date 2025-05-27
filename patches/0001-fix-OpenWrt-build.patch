@@ -1,27 +1,23 @@
-From: Miroslav Dimitrov <mirobiala@gmail.com>
-Date: Mon Sep 18 10:15:35 EEST 2023
-Subject: [PATCH 1/3] OpenWrt build patch
-
----
- Makefile                      | 32 ++++++++++++++++++++++++++++++--
- include/byteorder/swab.h      |  2 +-
- core/mesh/rtw_mesh.c          | 90 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- os_dep/linux/ioctl_cfg80211.c |  4 ++--
- 4 files changed, 123 insertions(+), 5 deletions(-)
-
 diff --git a/Makefile b/Makefile
 index e98e3ca..128de80 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -101,7 +101,7 @@ EXTRA_CFLAGS += -DCONFIG_RTW_ANDROID=$(CONFIG_RTW_ANDROID)
+@@ -101,13 +101,13 @@ EXTRA_CFLAGS += -DCONFIG_RTW_ANDROID=$(CONFIG_RTW_ANDROID)
  endif
-
+ 
  ########################## Debug ###########################
 -CONFIG_RTW_DEBUG = y
 +CONFIG_RTW_DEBUG = n
  # default log level is _DRV_INFO_ = 4,
  # please refer to "How_to_set_driver_debug_log_level.doc" to set the available level.
  CONFIG_RTW_LOG_LEVEL = 3
+ 
+ # enable /proc/net/rtlxxxx/ debug interfaces
+-CONFIG_PROC_DEBUG = y
++CONFIG_PROC_DEBUG = n
+ 
+ ######################## Wake On Lan ##########################
+ CONFIG_WOWLAN = n
 @@ -137,7 +137,8 @@ CONFIG_LAYER2_ROAMING = y
  #bit0: ROAM_ON_EXPIRED, #bit1: ROAM_ON_RESUME, #bit2: ROAM_ACTIVE
  CONFIG_ROAMING_FLAG = 0x3
@@ -32,28 +28,29 @@ index e98e3ca..128de80 100644
  CONFIG_PLATFORM_ANDROID_X86 = n
  CONFIG_PLATFORM_ANDROID_INTEL_X86 = n
  CONFIG_PLATFORM_JB_X86 = n
-@@ -1336,6 +1337,33 @@ ifeq ($(CONFIG_RTW_IOCTL_SET_COUNTRY), y)
+@@ -1336,6 +1337,34 @@ ifeq ($(CONFIG_RTW_IOCTL_SET_COUNTRY), y)
  EXTRA_CFLAGS += -DCONFIG_RTW_IOCTL_SET_COUNTRY
  endif
-
+ 
 +ifeq ($(CONFIG_PLATFORM_OPENWRT), y)
 +include $(TOPDIR)/rules.mk
 +include $(INCLUDE_DIR)/kernel.mk
 +
-+EXTRA_CFLAGS += -DCONFIG_MINIMAL_MEMORY_USAGE \
-+		-DCONFIG_LITTLE_ENDIAN \
++EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN \
 +		-DCONFIG_IOCTL_CFG80211 \
 +		-DRTW_USE_CFG80211_STA_EVENT \
-+		-DCONFIG_RTW_CHPLAN=0x76 \
++		-DRTW_IPS_MODE=0 \
++		-DRTW_LPS_MODE=0 \
++		-DRTW_WOW_LPS_MODE=0 \
 +		-DCONFIG_TDLS \
 +		-DCONFIG_RTW_MESH \
 +		-DCONFIG_RTW_MULTI_AP \
-+		-DCONFIG_CALIBRATE_TX_POWER_TO_MAX \
 +		-DCONFIG_P2P \
 +		-DCONFIG_FORCE_SW_CHANNEL_PLAN \
 +		-DCONFIG_CONCURRENT_MODE \
 +		-DCONFIG_IFACE_NUMBER=4 \
 +		-DCONFIG_QOS_OPTIMIZATION \
++		-DRTW_REDUCE_SCAN_SWITCH_CH_TIME \
 +		-Wno-error
 +
 +USER_MODULE_NAME := rtl$(MODULE_NAME)
@@ -66,125 +63,23 @@ index e98e3ca..128de80 100644
  ifeq ($(CONFIG_PLATFORM_I386_PC), y)
  EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
  EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
-diff --git a/include/byteorder/swab.h b/include/byteorder/swab.h
-index a8dd46b..64f1f3d 100644
---- a/include/byteorder/swab.h
-+++ b/include/byteorder/swab.h
-@@ -12,7 +12,7 @@
-  * more details.
-  *
-  *****************************************************************************/
--#ifndef _LINUX_BYTEORDER_SWAB_H
-+#if !defined(_UAPI_LINUX_SWAB_H) && !defined(_LINUX_BYTEORDER_SWAB_H)
- #define _LINUX_BYTEORDER_SWAB_H
-
- #if !defined(CONFIG_PLATFORM_MSTAR)
 diff --git a/core/mesh/rtw_mesh.c b/core/mesh/rtw_mesh.c
-index fad46e8..adc9556 100644
+index fad46e8..5da72f4 100644
 --- a/core/mesh/rtw_mesh.c
 +++ b/core/mesh/rtw_mesh.c
-@@ -3020,6 +3020,96 @@
- 	}
- }
+@@ -3022,6 +3022,7 @@ static void rtw_mpath_tx_queue_flush(_adapter *adapter)
  
-+#ifdef CONFIG_SLOB
-+/*
-+ * Common fields provided in kmem_cache by all slab allocators
-+ * This struct is either used directly by the allocator (SLOB)
-+ * or the allocator must include definitions for all fields
-+ * provided in kmem_cache_common in their definition of kmem_cache.
-+ *
-+ * Once we can do anonymous structs (C11 standard) we could put a
-+ * anonymous struct definition in these allocators so that the
-+ * separate allocations in the kmem_cache structure of SLAB and
-+ * SLUB is no longer needed.
-+ */
-+struct kmem_cache {
-+	unsigned int object_size;/* The original size of the object */
-+	unsigned int size;	/* The aligned/padded/added on size  */
-+	unsigned int align;	/* Alignment as calculated */
-+	slab_flags_t flags;	/* Active flags on the slab */
-+	unsigned int useroffset;/* Usercopy region offset */
-+	unsigned int usersize;	/* Usercopy region size */
-+	const char *name;	/* Slab name for sysfs */
-+	int refcount;		/* Use counter */
-+	void (*ctor)(void *);	/* Called on object slot creation */
-+	struct list_head list;	/* List of all slab caches on the system */
-+};
-+
-+#else /* !CONFIG_SLOB */
-+
-+struct memcg_cache_array {
-+	struct rcu_head rcu;
-+	struct kmem_cache *entries[0];
-+};
-+
-+/*
-+ * This is the main placeholder for memcg-related information in kmem caches.
-+ * Both the root cache and the child caches will have it. For the root cache,
-+ * this will hold a dynamically allocated array large enough to hold
-+ * information about the currently limited memcgs in the system. To allow the
-+ * array to be accessed without taking any locks, on relocation we free the old
-+ * version only after a grace period.
-+ *
-+ * Root and child caches hold different metadata.
-+ *
-+ * @root_cache:	Common to root and child caches.  NULL for root, pointer to
-+ *		the root cache for children.
-+ *
-+ * The following fields are specific to root caches.
-+ *
-+ * @memcg_caches: kmemcg ID indexed table of child caches.  This table is
-+ *		used to index child cachces during allocation and cleared
-+ *		early during shutdown.
-+ *
-+ * @root_caches_node: List node for slab_root_caches list.
-+ *
-+ * @children:	List of all child caches.  While the child caches are also
-+ *		reachable through @memcg_caches, a child cache remains on
-+ *		this list until it is actually destroyed.
-+ *
-+ * The following fields are specific to child caches.
-+ *
-+ * @memcg:	Pointer to the memcg this cache belongs to.
-+ *
-+ * @children_node: List node for @root_cache->children list.
-+ *
-+ * @kmem_caches_node: List node for @memcg->kmem_caches list.
-+ */
-+struct memcg_cache_params {
-+	struct kmem_cache *root_cache;
-+	union {
-+		struct {
-+			struct memcg_cache_array __rcu *memcg_caches;
-+			struct list_head __root_caches_node;
-+			struct list_head children;
-+			bool dying;
-+		};
-+		struct {
-+			struct mem_cgroup *memcg;
-+			struct list_head children_node;
-+			struct list_head kmem_caches_node;
-+			struct percpu_ref refcnt;
-+
-+			void (*work_fn)(struct kmem_cache *);
-+			union {
-+				struct rcu_head rcu_head;
-+				struct work_struct work;
-+			};
-+		};
-+	};
-+};
-+#endif /* CONFIG_SLOB */
-+
  #ifdef PLATFORM_LINUX /* 3.10 ~ 4.13 checked */
  #if defined(CONFIG_SLUB)
++#include <../mm/slab.h>
  #include <linux/slub_def.h>
+ #elif defined(CONFIG_SLAB)
+ #include <linux/slab_def.h>
 diff --git a/os_dep/linux/ioctl_cfg80211.c b/os_dep/linux/ioctl_cfg80211.c
 index f7b59a8..ac1e0b2 100644
 --- a/os_dep/linux/ioctl_cfg80211.c
 +++ b/os_dep/linux/ioctl_cfg80211.c
-@@ -8334,7 +8334,7 @@
+@@ -8413,7 +8413,7 @@
  	return ret;
  }
  
@@ -193,7 +88,7 @@ index f7b59a8..ac1e0b2 100644
  static void cfg80211_rtw_mgmt_frame_register(struct wiphy *wiphy,
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0))
  	struct wireless_dev *wdev,
-@@ -10516,7 +10516,7 @@
+@@ -10595,7 +10595,7 @@
  
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
  	.mgmt_tx = cfg80211_rtw_mgmt_tx,
