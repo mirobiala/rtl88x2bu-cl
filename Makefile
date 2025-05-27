@@ -7,10 +7,10 @@ PKG_RELEASE=2
 PKG_LICENSE:=GPLv2
 
 PKG_SOURCE_URL:=https://github.com/RinCat/RTL88x2BU-Linux-Driver
-PKG_MIRROR_HASH:=b1b04263b5903782eeedb6e08bb9fb2d3eefbbfa65c29fc0fa83a0fea5f2707c
+PKG_MIRROR_HASH:=150764318aa3cccfe74b655748aa69ffe3820bbc8421e889018dd8f8de6be22d
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2025-05-09
-PKG_SOURCE_VERSION:=9624bd8943dc9998fc09355ea725ef7d59f80cb2
+PKG_SOURCE_DATE:=2025-05-26
+PKG_SOURCE_VERSION:=1f0005d9be0f4471b3b83d8172cd109a2b7855e8
 PKG_MAINTAINER:=Rin Cat <dev@rincat.ch>
 PKG_BUILD_PARALLEL:=1
 
@@ -36,31 +36,40 @@ NOSTDINC_FLAGS := \
 	-I$(STAGING_DIR)/usr/include/mac80211/uapi \
 	-include backport/backport.h
 
-# from Makefile: obj-(CONFIG_RTL8822BU) = ...
-ifdef CONFIG_PACKAGE_kmod-rtl88x2bu-cl
-   PKG_MAKE_FLAGS += CONFIG_RTL8822BU=m
-endif
-
-NOSTDINC_FLAGS+=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DBUILD_OPENWRT
-
-define OpenWRT/Patch
+define KernelPackage/rtl88x2bu-cl/config
 $(shell \
 	PATCHDIR=$$(pwd); \
 	cd $(TOPDIR); \
 	for PATCH in $$PATCHDIR/openwrt_patches/*; do \
 		if ! git apply -R --check <$$PATCH >/dev/null 2>&1; then \
 			git apply -v <$$PATCH; \
-			PACKAGE=$$(cat $$PATCH | grep -o "[a-zA-Z0-9]*\/patches" | grep -o "[a-zA-Z0-9]*" | head -n 1); \
-			$$(make package/$$PACKAGE/compile); \
 		fi; \
 	done; \
 )
 endef
 
-define Build/Prepare
-	$(call OpenWRT/Patch)
-	$(call Build/Prepare/Default)
+# from Makefile: obj-(CONFIG_RTL8822BU) = ...
+ifdef CONFIG_PACKAGE_kmod-rtl88x2bu-cl
+   PKG_MAKE_FLAGS += CONFIG_RTL8822BU=m
+endif
+
+define OpenWRT/Clean
+$(shell \
+	PATCHDIR=$$(pwd); \
+	cd $(TOPDIR); \
+	for PATCH in $$PATCHDIR/openwrt_patches/*; do \
+		FILE=$$(cat $$PATCH | grep "+++ b/" | head -n 1 | grep -o "package/.*"); \
+		if [ -f $$FILE ]; then rm $$FILE; fi; \
+	done; \
+)
 endef
+
+define Build/Clean
+	$(call OpenWRT/Clean)
+	$(call Build/Clean/Default)
+endef
+
+NOSTDINC_FLAGS+=-DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT -DBUILD_OPENWRT
 
 define Build/Compile
 	+$(KERNEL_MAKE) $(PKG_JOBS) \
