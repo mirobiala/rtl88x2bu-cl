@@ -28,7 +28,7 @@ index e98e3ca..128de80 100644
  CONFIG_PLATFORM_ANDROID_X86 = n
  CONFIG_PLATFORM_ANDROID_INTEL_X86 = n
  CONFIG_PLATFORM_JB_X86 = n
-@@ -1336,6 +1337,35 @@ ifeq ($(CONFIG_RTW_IOCTL_SET_COUNTRY), y)
+@@ -1336,6 +1337,34 @@ ifeq ($(CONFIG_RTW_IOCTL_SET_COUNTRY), y)
  EXTRA_CFLAGS += -DCONFIG_RTW_IOCTL_SET_COUNTRY
  endif
  
@@ -36,8 +36,7 @@ index e98e3ca..128de80 100644
 +include $(TOPDIR)/rules.mk
 +include $(INCLUDE_DIR)/kernel.mk
 +
-+EXTRA_CFLAGS += -DCONFIG_MINIMAL_MEMORY_USAGE \
-+		-DCONFIG_LITTLE_ENDIAN \
++EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN \
 +		-DCONFIG_IOCTL_CFG80211 \
 +		-DRTW_USE_CFG80211_STA_EVENT \
 +		-DRTW_IPS_MODE=0 \
@@ -65,17 +64,22 @@ index e98e3ca..128de80 100644
  EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
  EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
 diff --git a/core/mesh/rtw_mesh.c b/core/mesh/rtw_mesh.c
-index fad46e8..5da72f4 100644
+index fad46e8..de92cb3 100644
 --- a/core/mesh/rtw_mesh.c
 +++ b/core/mesh/rtw_mesh.c
-@@ -3022,6 +3022,7 @@ static void rtw_mpath_tx_queue_flush(_adapter *adapter)
+@@ -3021,11 +3021,7 @@ static void rtw_mpath_tx_queue_flush(_adapter *adapter)
+ }
  
  #ifdef PLATFORM_LINUX /* 3.10 ~ 4.13 checked */
- #if defined(CONFIG_SLUB)
-+#include <../mm/slab.h>
- #include <linux/slub_def.h>
- #elif defined(CONFIG_SLAB)
- #include <linux/slab_def.h>
+-#if defined(CONFIG_SLUB)
+-#include <linux/slub_def.h>
+-#elif defined(CONFIG_SLAB)
+-#include <linux/slab_def.h>
+-#endif
++#include <linux/slab.h>
+ typedef struct kmem_cache rtw_mcache;
+ #endif
+ 
 diff --git a/os_dep/linux/ioctl_cfg80211.c b/os_dep/linux/ioctl_cfg80211.c
 index 1b042f6..3a1caa4 100755
 --- a/os_dep/linux/ioctl_cfg80211.c
