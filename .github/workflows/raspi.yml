@@ -27,7 +27,7 @@ jobs:
           cd openwrt
           git clone https://github.com/mirobiala/rtl88x2bu-cl package/kernel/rtl88x2bu-cl
           cd package/kernel/rtl88x2bu-cl
-          git checkout v1.2.1
+          git checkout v1.3.0
       - name: Dump Configs
         run: |
           cd openwrt
