@@ -36,5 +36,6 @@ jobs:
           echo -e "OPENWRT_TAG=$(v`echo $OPENWRT_TAG | grep -o "[0-9].*"`)" >> $GITHUB_OUTPUT
         id: get_openwrt_tag
      - name: Print result
+        run: |
           OPENWRT_TAG=${{ steps.get_openwrt_tag.outputs.OPENWRT_TAG }}
           echo $OPENWRT_TAG
