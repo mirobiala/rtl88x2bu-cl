@@ -13,6 +13,21 @@ index ec72564..b2e8cbb 100644
  			rtw_check_for_vht20(padapter, ie + _BEACON_IE_OFFSET_, pbss_network->IELength - _BEACON_IE_OFFSET_);
  			pmlmepriv->ori_vht_en = 1;
  			pmlmepriv->vhtpriv.vht_option = _TRUE;
+@@ -4237,10 +4235,10 @@ void stop_ap_mode(_adapter *padapter)
+ 	padapter->netif_up = _FALSE;
+ 	/* _rtw_spinlock_free(&pmlmepriv->bcn_update_lock); */
+ 
+-	/* reset and init security priv , this can refine with rtw_reset_securitypriv */
+-	_rtw_memset((unsigned char *)&padapter->securitypriv, 0, sizeof(struct security_priv));
+-	padapter->securitypriv.ndisauthtype = Ndis802_11AuthModeOpen;
+-	padapter->securitypriv.ndisencryptstatus = Ndis802_11WEPDisabled;
++	// /* reset and init security priv , this can refine with rtw_reset_securitypriv */
++	// _rtw_memset((unsigned char *)&padapter->securitypriv, 0, sizeof(struct security_priv));
++	// padapter->securitypriv.ndisauthtype = Ndis802_11AuthModeOpen;
++	// padapter->securitypriv.ndisencryptstatus = Ndis802_11WEPDisabled;
+ 
+ #ifdef CONFIG_DFS_MASTER
+ 	rtw_dfs_rd_en_decision(padapter, self_action, 0);
 diff --git a/os_dep/linux/os_intfs.c b/os_dep/linux/os_intfs.c
 index 1d50aa5..fa26b29 100644
 --- a/os_dep/linux/os_intfs.c
