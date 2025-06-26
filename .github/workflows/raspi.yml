@@ -16,7 +16,7 @@ jobs:
           git clone https://git.openwrt.org/openwrt/openwrt.git
           cd openwrt
           git pull
-          git checkout v24.10.1
+          git checkout v24.10.2
       - name: Update & Install Feeds
         run: |
           cd openwrt
@@ -27,7 +27,7 @@ jobs:
           cd openwrt
           git clone https://github.com/mirobiala/rtl88x2bu-cl package/kernel/rtl88x2bu-cl
           cd package/kernel/rtl88x2bu-cl
-          git checkout v1.3.0
+          git checkout v1.3.1
       - name: Dump Configs
         run: |
           cd openwrt
