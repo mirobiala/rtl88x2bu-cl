@@ -1,9 +1,9 @@
 --- /dev/null
 +++ b/package/network/utils/iwinfo/patches/999-rtl88x2bu-cl.patch
-@@ -0,0 +1,24 @@
+@@ -0,0 +1,25 @@
 +--- a/devices.txt
 ++++ b/devices.txt
-+@@ -204,3 +204,21 @@
++@@ -204,3 +204,22 @@
 + # USB devices
 + # 0x0000 | 0x0000 | vendor id | product id | ...
 + 0x0000 0x0000 0x0e8d 0x7961    0      0  "MediaTek" "MT7921AU"
@@ -25,3 +25,4 @@
 ++0x0000 0x0000 0x2357 0x0138    0      0  "TP-Link" "Archer T3U Plus"
 ++0x0000 0x0000 0x2357 0x0115    0      0  "TP-Link" "Archer T4U V3"
 ++0x0000 0x0000 0x20F4 0x808A    0      0  "TRENDnet" "TEW-808UBM"
+++0x0000 0x0000 0x0BDA 0xB812    0      0  "UGREEN" "CM493"

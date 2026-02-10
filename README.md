@@ -63,6 +63,14 @@ I tested it with [TP-Link Archer T3U Nano](https://www.tp-link.com/us/home-netwo
 * TRENDnet TEW-808UBM
 </details>
 
+<details>
+  <summary>
+    UGREEN
+  </summary>
+
+* UGREEN CM493
+</details>
+
 ## Usage
 * Ensure you have C compiler & toolchains, e.g. `build-essential` for [OpenWRT](https://openwrt.org/), check [this](https://openwrt.org/docs/guide-developer/toolchain/install-buildsystem).
 * Download and update the [OpenWRT sources](https://git.openwrt.org/openwrt/openwrt.git):
