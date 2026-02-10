@@ -1,9 +1,9 @@
 --- /dev/null
 +++ b/package/network/utils/iwinfo/patches/999-rtl88x2bu-cl.patch
-@@ -0,0 +1,27 @@
+@@ -0,0 +1,28 @@
 +--- a/devices.txt
 ++++ b/devices.txt
-+@@ -245,6 +245,24 @@
++@@ -245,6 +245,25 @@
 + # rtl8xxxu/rtl8xxxu_core.c
 + 0x0000 0x0000 0x0bda 0x8176    0      0  "Realtek" "RTL8188CU"
 + 0x0000 0x0000 0x0bda 0xf179    0      0  "Realtek" "RTL8188FTV"
@@ -25,6 +25,7 @@
 ++0x0000 0x0000 0x2357 0x0138    0      0  "TP-Link" "Archer T3U Plus"
 ++0x0000 0x0000 0x2357 0x0115    0      0  "TP-Link" "Archer T4U V3"
 ++0x0000 0x0000 0x20F4 0x808A    0      0  "TRENDnet" "TEW-808UBM"
+++0x0000 0x0000 0x0BDA 0xB812    0      0  "UGREEN" "CM493"
 +
 + # FDT compatible strings
 + # "compatible" | txpower offset | frequency offset | ...
