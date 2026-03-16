@@ -32,6 +32,7 @@ jobs:
         run: |
           cd openwrt
           wget https://downloads.openwrt.org/snapshots/targets/bcm27xx/bcm2711/config.buildinfo -O .config
+          make defconfig
       - name: Its Baking Time 
         run: |
            cd openwrt
