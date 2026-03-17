@@ -1,4 +1,4 @@
-name: Make OpenWRT raspi 4 88x2bu image
+name: Make OpenWRT Raspberry Pi 4 rtl88x2bu image
 on:
   workflow_dispatch:
 
@@ -31,7 +31,8 @@ jobs:
       - name: Dump Configs
         run: |
           cd openwrt
-          curl https://raw.githubusercontent.com/ElytrA8-ops/openwrt-88x2bu/refs/heads/main/config -o .config
+          wget https://downloads.openwrt.org/releases/24.10.2/targets/bcm27xx/bcm2711/config.buildinfo -O .config
+          make defconfig
       - name: Its Baking Time 
         run: |
            cd openwrt
