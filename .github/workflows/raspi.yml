@@ -32,6 +32,12 @@ jobs:
         run: |
           cd openwrt
           wget https://downloads.openwrt.org/snapshots/targets/bcm27xx/bcm2711/config.buildinfo -O .config
+          sed -i "/CONFIG_TARGET_ALL_PROFILES/d" .config
+          echo "CONFIG_TARGET_ALL_PROFILES=n" >> .config
+          sed -i "/CONFIG_TARGET_DEVICE_/d" .config
+          echo "CONFIG_TARGET_DEVICE_bcm27xx_bcm2711_DEVICE_rpi-4=y" >> .config
+          sed -i "/CONFIG_PACKAGE_kmod-rtl88x2bu-cl/d" .config
+          echo "CONFIG_PACKAGE_kmod-rtl88x2bu-cl=y" >> .config
           make defconfig
       - name: Its Baking Time 
         run: |
@@ -40,5 +46,5 @@ jobs:
            make -j$(nproc)
       - uses: actions/upload-artifact@v4
         with:
-          name: openwrt-snapshot-rpi-4.img.gz
+          name: openwrt-snapshot-rpi-4.gz
           path: openwrt/bin/targets/bcm27xx/bcm2711/*.img.gz
