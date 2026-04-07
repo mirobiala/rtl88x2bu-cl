@@ -44,7 +44,7 @@ jobs:
            cd openwrt
            echo using $(nproc) cores
            make -j$(nproc)
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: openwrt-snapshot-rpi-4.gz
           path: openwrt/bin/targets/bcm27xx/bcm2711/*.img.gz
