@@ -38,11 +38,19 @@ jobs:
           echo "CONFIG_TARGET_bcm27xx_bcm2711_DEVICE_rpi-4=y" >> .config
           echo "CONFIG_PACKAGE_kmod-rtl88x2bu-cl=y" >> .config
           make defconfig
-      - name: Its Baking Time 
+      - name: Its Baking Time
+        id: parallel_build
+        continue-on-error: true
         run: |
            cd openwrt
            echo using $(nproc) cores
            make -j$(nproc)
+      - name: Fallback build (single-threaded)
+        if: steps.parallel_build.outcome == 'failure'
+        run: |
+           cd openwrt
+           echo "Parallel build failed, retrying with -j1 for debugging..."
+           make -j1 V=sc
       - uses: actions/upload-artifact@v6
         with:
           name: openwrt-25.12.2-rpi-4.gz
