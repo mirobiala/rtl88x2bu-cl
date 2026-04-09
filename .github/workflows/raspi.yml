@@ -36,6 +36,7 @@ jobs:
           sed -i "/CONFIG_TARGET_DEVICE_/d" .config
           echo "CONFIG_TARGET_MULTI_PROFILE=n" >> .config
           echo "CONFIG_TARGET_bcm27xx_bcm2711_DEVICE_rpi-4=y" >> .config
+          echo "CONFIG_PACKAGE_kmod-of-mdio=y" >> .config
           echo "CONFIG_PACKAGE_kmod-rtl88x2bu-cl=y" >> .config
           make defconfig
       - name: Its Baking Time
