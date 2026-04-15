@@ -16,7 +16,7 @@ jobs:
           git clone https://git.openwrt.org/openwrt/openwrt.git
           cd openwrt
           git pull
-          git checkout v22.03.6
+          git checkout v22.03.7
       - name: Update & Install Feeds
         run: |
           cd openwrt
@@ -27,11 +27,11 @@ jobs:
           cd openwrt
           git clone https://github.com/mirobiala/rtl88x2bu-cl package/kernel/rtl88x2bu-cl
           cd package/kernel/rtl88x2bu-cl
-          git checkout openwrt-22.03.6
+          git checkout openwrt-22.03.7
       - name: Dump Configs
         run: |
           cd openwrt
-          wget https://downloads.openwrt.org/releases/22.03.6/targets/bcm27xx/bcm2711/config.buildinfo -O .config
+          wget https://downloads.openwrt.org/releases/22.03.7/targets/bcm27xx/bcm2711/config.buildinfo -O .config
           sed -i "/CONFIG_TARGET_MULTI_PROFILE/d" .config
           sed -i "/CONFIG_TARGET_DEVICE_/d" .config
           echo "CONFIG_TARGET_MULTI_PROFILE=n" >> .config
@@ -53,5 +53,5 @@ jobs:
            make -j1 V=sc
       - uses: actions/upload-artifact@v6
         with:
-          name: openwrt-22.03.6-rpi-4.gz
+          name: openwrt-22.03.7-rpi-4.gz
           path: openwrt/bin/targets/bcm27xx/bcm2711/*.img.gz
