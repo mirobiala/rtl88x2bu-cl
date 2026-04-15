@@ -75,19 +75,17 @@ I tested it with [TP-Link Archer T3U Nano](https://www.tp-link.com/us/home-netwo
 * Ensure you have C compiler & toolchains, e.g. `build-essential` for [OpenWRT](https://openwrt.org/), check [this](https://openwrt.org/docs/guide-developer/toolchain/install-buildsystem).
 * Download and update the [OpenWRT sources](https://git.openwrt.org/openwrt/openwrt.git):
 ```
-git clone https://git.openwrt.org/openwrt/openwrt.git
+mkdir openwrt
 cd openwrt
-git pull
-```
-* Select a specific code revision:
-```
-git branch -a
-git checkout main
-```
-* Update the feeds:
-```
-./scripts/feeds update -a
-./scripts/feeds install -a
+
+git clone https://git.openwrt.org/openwrt/openwrt.git openwrt-git
+wget https://downloads.openwrt.org/releases/<release>/targets/<target>/<subtarget>/openwrt-sdk-<release>-<target>-<subtarget>_gcc-<version>_musl.Linux-x86_64.tar.zst
+tar -xvf openwrt-sdk-<release>-<target>-<subtarget>_gcc-<version>_musl.Linux-x86_64.tar.zst
+
+cd openwrt-sdk-<release>-<target>-<subtarget>_gcc-<version>_musl.Linux-x86_64
+cp -a ../openwrt-git/package/kernel/mac80211 package/kernel/
+cp -a ../openwrt-git/package/kernel/linux package/kernel/
+
 ```
 * Download the [rtl88x2bu](https://github.com/mirobiala/rtl88x2bu-cl) package:
 ```
@@ -106,9 +104,8 @@ wget https://downloads.openwrt.org/snapshots/targets/<target>/config.buildinfo -
 ```
 * Compile and build the [OpenWRT](https://openwrt.org/) image.
 ```
-make menuconfig
-<enable Kernel modules->Wireless Drivers->kmod-rtl88x2bu-cl ... Realtek 88x2BU driver by RinCat>
-make
+make oldconfig
+make V=99
 ```
 
 ## Links
