@@ -72,7 +72,7 @@ I tested it with [TP-Link Archer T3U Nano](https://www.tp-link.com/us/home-netwo
 </details>
 
 ## Usage
-* Ensure you have C compiler & toolchains, e.g. `build-essential` for [OpenWRT](https://openwrt.org/), check [this](https://openwrt.org/docs/guide-developer/toolchain/install-buildsystem).
+* Ensure you have C compiler & toolchains, e.g. `build-essential` for [OpenWRT](https://openwrt.org/), check the [SDK guidelines](https://openwrt.org/docs/guide-developer/toolchain/using_the_sdk).
 * Download and update the [OpenWRT sources](https://git.openwrt.org/openwrt/openwrt.git):
 ```
 mkdir openwrt
