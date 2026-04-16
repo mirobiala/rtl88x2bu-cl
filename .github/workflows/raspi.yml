@@ -53,5 +53,5 @@ jobs:
            make -j1 V=sc
       - uses: actions/upload-artifact@v6
         with:
-          name: openwrt-snapshot-rpi-4.gz
-          path: openwrt/bin/targets/bcm27xx/bcm2711/*.img.gz
+          name: openwrt-25.12.2-mediatek_filogic_cudy_wr3000p-v1.gz
+          path: openwrt/bin/targets/mediatek/filogic/*.img.gz
