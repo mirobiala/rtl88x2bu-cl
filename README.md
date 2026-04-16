@@ -101,6 +101,9 @@ cd ../../../
 * Download the default config for the **desired** target:
 ```
 wget https://downloads.openwrt.org/snapshots/targets/<target>/config.buildinfo -O .config
+echo "CONFIG_TARGET_MULTI_PROFILE=n" >> .config
+echo "CONFIG_TARGET_<target>_<subtarget>_DEVICE_<model>=y" >> .config
+echo "CONFIG_PACKAGE_kmod-rtl88x2bu-cl=y" >> .config
 ```
 * Compile and build the [OpenWRT](https://openwrt.org/) image.
 ```
