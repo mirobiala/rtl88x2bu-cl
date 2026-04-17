@@ -78,13 +78,12 @@ I tested it with [TP-Link Archer T3U Nano](https://www.tp-link.com/us/home-netwo
 mkdir openwrt
 cd openwrt
 
-git clone https://git.openwrt.org/openwrt/openwrt.git openwrt-git
 wget https://downloads.openwrt.org/releases/<release>/targets/<target>/<subtarget>/openwrt-sdk-<release>-<target>-<subtarget>_gcc-<version>_musl.Linux-x86_64.tar.zst
 tar -xvf openwrt-sdk-<release>-<target>-<subtarget>_gcc-<version>_musl.Linux-x86_64.tar.zst
 
 cd openwrt-sdk-<release>-<target>-<subtarget>_gcc-<version>_musl.Linux-x86_64
-cp -a ../openwrt-git/package/kernel/mac80211 package/kernel/
-cp -a ../openwrt-git/package/kernel/linux package/kernel/
+./scripts/feeds update -a
+./scripts/feeds install <missing package dependencies>
 
 ```
 * Download the [rtl88x2bu](https://github.com/mirobiala/rtl88x2bu-cl) package:
@@ -95,7 +94,7 @@ git clone https://github.com/mirobiala/rtl88x2bu-cl package/kernel/rtl88x2bu-cl
 ```
 cd package/kernel/rtl88x2bu-cl
 git branch -a
-git checkout main
+git checkout <release>
 cd ../../../
 ```
 * Download the default config for the **desired** target:
