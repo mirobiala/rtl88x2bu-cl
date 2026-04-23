@@ -1,4 +1,4 @@
-name: Make OpenWRT Raspberry Pi 4 rtl88x2bu image
+name: Make OpenWRT Raspberry Pi 5 rtl88x2bu image
 on:
   workflow_dispatch:
 
@@ -16,7 +16,7 @@ jobs:
           git clone https://git.openwrt.org/openwrt/openwrt.git
           cd openwrt
           git pull
-          git checkout main
+          git checkout v25.12.2
       - name: Update & Install Feeds
         run: |
           cd openwrt
@@ -31,11 +31,11 @@ jobs:
       - name: Dump Configs
         run: |
           cd openwrt
-          wget https://downloads.openwrt.org/snapshots/targets/bcm27xx/bcm2711/config.buildinfo -O .config
+          wget https://downloads.openwrt.org/releases/25.12.2/targets/bcm27xx/bcm2712/config.buildinfo -O .config
           sed -i "/CONFIG_TARGET_MULTI_PROFILE/d" .config
           sed -i "/CONFIG_TARGET_DEVICE_/d" .config
           echo "CONFIG_TARGET_MULTI_PROFILE=n" >> .config
-          echo "CONFIG_TARGET_bcm27xx_bcm2711_DEVICE_rpi-4=y" >> .config
+          echo "CONFIG_TARGET_bcm27xx_bcm2712_DEVICE_rpi-5=y" >> .config
           echo "CONFIG_PACKAGE_kmod-rtl88x2bu-cl=y" >> .config
           make defconfig
       - name: Its Baking Time
@@ -53,5 +53,5 @@ jobs:
            make -j1 V=sc
       - uses: actions/upload-artifact@v6
         with:
-          name: openwrt-snapshot-rpi-4.gz
-          path: openwrt/bin/targets/bcm27xx/bcm2711/*.img.gz
+          name: openwrt-25.12.2-rpi-5.gz
+          path: openwrt/bin/targets/bcm27xx/bcm2712/*.img.gz
