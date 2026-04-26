@@ -16,7 +16,7 @@ jobs:
           git clone https://git.openwrt.org/openwrt/openwrt.git
           cd openwrt
           git pull
-          git checkout v25.12.2
+          git checkout main
       - name: Update & Install Feeds
         run: |
           cd openwrt
@@ -31,7 +31,7 @@ jobs:
       - name: Dump Configs
         run: |
           cd openwrt
-          wget https://downloads.openwrt.org/releases/25.12.2/targets/bcm27xx/bcm2712/config.buildinfo -O .config
+          wget https://downloads.openwrt.org/snapshots/targets/bcm27xx/bcm2712/config.buildinfo
           sed -i "/CONFIG_TARGET_MULTI_PROFILE/d" .config
           sed -i "/CONFIG_TARGET_DEVICE_/d" .config
           echo "CONFIG_TARGET_MULTI_PROFILE=n" >> .config
