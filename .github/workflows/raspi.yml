@@ -53,7 +53,7 @@ jobs:
            make -j1 V=sc
       - uses: actions/upload-artifact@v6
         with:
-          name: openwrt-25.12.2-rpi-5
+          name: openwrt-snapshot-rpi-5
           path: | 
             openwrt/bin/targets/bcm27xx/bcm2712/*.img.gz
             openwrt/bin/targets/bcm27xx/bcm2712/packages/kmod-rtl88x2bu*.ipk
