@@ -1,5 +1,7 @@
 
-plenty of: warning: no previous prototype on an openwrt-sdk-25.12.2-mediatek-filogic_gcc-14.3.0_musl.Linux-x86_64
+**plenty of**: warning: no previous prototype 
+
+on an openwrt-sdk-25.12.2-mediatek-filogic_gcc-14.3.0_musl.Linux-x86_64
 
 # rtl88x2bu package for OpenWRT (snapshot builds)
 This package uses [Realtek 88x2BU driver](https://github.com/RinCat/RTL88x2BU-Linux-Driver) by [@RinCat](https://github.com/RinCat) with patches for [OpenWRT](https://openwrt.org/).
